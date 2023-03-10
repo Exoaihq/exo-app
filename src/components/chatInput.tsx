@@ -18,7 +18,7 @@ function ChatInput({ handleSubmit }: { handleSubmit: (value: string) => void }) 
     return (
         <form onSubmit={onSubmit}>
             <div className="flex items-center justify-between w-full p-3 border-t border-gray-300">
-                <input type="text" placeholder="Message"
+                <input type="text"
                     className="block w-full py-2 pl-4 mx-3 bg-gray-100 rounded-full outline-none focus:text-gray-700"
                     name="message" required value={value} onChange={onChange} />
                 {/* <button>

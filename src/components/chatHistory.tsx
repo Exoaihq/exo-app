@@ -5,6 +5,7 @@ export interface ChatHistoryProps {
     message: string;
 }
 
+
 function ChatHistory({ history }: { history: ChatHistoryProps[] }) {
 
     return (

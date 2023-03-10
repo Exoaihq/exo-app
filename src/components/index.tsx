@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import ChatHeader from './chatHeader';
 import ChatHistory from './chatHistory';
 import ChatInput from './chatInput';
+import ScratchPadHeader from './scratchPadHeader';
 
 const startingHistory = [
   {
@@ -34,25 +35,21 @@ const App = () => {
   }
 
   return (
-    <div>
-      <h1>Code Generation</h1>
+    <div >
 
-      <div className="container mx-auto">
+      <div className="min-w-full border rounded grid grid-cols-2 gap-4  divide-x">
 
-        <div className="min-w-full border rounded lg:grid lg:grid-cols-2">
-
-          <div className="hidden lg:col-span-2 lg:block">
-            <div className="w-full">
-              <ChatHeader />
-              <ChatHistory history={history} />
-              <ChatInput handleSubmit={handleSubmit} />
-            </div>
-          </div>
-
+        <div >
+          <ChatHeader />
+          <ChatHistory history={history} />
+          <ChatInput handleSubmit={handleSubmit} />
         </div>
-
+        <div >
+          <ScratchPadHeader />
+        </div>
       </div>
-    </div>
+
+    </div >
   );
 };
 
