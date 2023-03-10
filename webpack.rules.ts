@@ -1,4 +1,5 @@
 import type { ModuleOptions } from 'webpack';
+const path = require("path");
 
 export const rules: Required<ModuleOptions>['rules'] = [
   // Add support for native node modules
@@ -28,7 +29,7 @@ export const rules: Required<ModuleOptions>['rules'] = [
       },
     },
   },
-   {
+  {
     test: /\.jsx?$/,
     use: {
       loader: 'babel-loader',
@@ -38,4 +39,11 @@ export const rules: Required<ModuleOptions>['rules'] = [
       }
     }
   },
+  {
+    test: /\.(svg|png|jpg|gif)$/,
+    include: [
+      path.resolve(__dirname, "/src/resources/images")
+    ],
+    type: "asset/inline"
+  }
 ];
