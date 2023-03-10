@@ -1,4 +1,4 @@
-import { Fragment } from "react"
+import { Fragment, useEffect, useRef } from "react"
 
 export interface ChatHistoryProps {
     type: string;
@@ -7,10 +7,20 @@ export interface ChatHistoryProps {
 
 
 function ChatHistory({ history }: { history: ChatHistoryProps[] }) {
+    const messagesEndRef = useRef(null)
+
+    function scrollToBottom() {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
+
+    useEffect(() => {
+        scrollToBottom()
+    }, [history])
 
     return (
         <div className="relative w-full p-6 overflow-y-auto h-[40rem]">
-            <ul className="space-y-2">
+
+            <ul className="space-y-2 h-full">
                 {history.map((item, index) => {
 
                     const line = item.type === "bot" ? <li className="flex justify-start">
@@ -27,6 +37,9 @@ function ChatHistory({ history }: { history: ChatHistoryProps[] }) {
                 })}
 
             </ul>
+            <div style={{ float: "left", clear: "both" }}
+                ref={messagesEndRef}>
+            </div>
         </div>
     )
 }

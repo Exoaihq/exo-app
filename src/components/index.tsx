@@ -18,10 +18,6 @@ const startingHistory = [
   {
     type: "bot",
     message: "How is your day?"
-  },
-  {
-    type: "bot",
-    message: "Good how is yours?"
   }
 ]
 
