@@ -1,8 +1,14 @@
 import { Fragment, useEffect, useRef } from "react"
 
+export enum ChatUserType {
+    system = "system",
+    user = "user",
+    assistant = "assistant"
+}
+
 export interface ChatHistoryProps {
-    type: string;
-    message: string;
+    role: ChatUserType;
+    content: string;
 }
 
 
@@ -23,14 +29,14 @@ function ChatHistory({ history }: { history: ChatHistoryProps[] }) {
             <ul className="space-y-2 h-full">
                 {history.map((item, index) => {
 
-                    const line = item.type === "bot" ? <li className="flex justify-start">
+                    const line = item.role === ChatUserType.assistant ? <li className="flex justify-start">
                         <div className="relative max-w-xl px-4 py-2 text-gray-700 rounded shadow">
-                            <span className="block">{item.message}
+                            <span className="block">{item.content}
                             </span>
                         </div>
                     </li> : <li className="flex justify-end">
                         <div className="relative max-w-xl px-4 py-2 text-gray-700 bg-gray-100 rounded shadow">
-                            <span className="block">{item.message}</span>
+                            <span className="block">{item.content}</span>
                         </div>
                     </li>
                     return line
@@ -45,3 +51,4 @@ function ChatHistory({ history }: { history: ChatHistoryProps[] }) {
 }
 
 export default ChatHistory
+

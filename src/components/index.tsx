@@ -2,40 +2,29 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import ChatHeader from './chatHeader';
-import ChatHistory from './chatHistory';
+import ChatHistory, { ChatUserType } from './chatHistory';
 import ChatInput from './chatInput';
 import ScratchPadHeader from './scratchPadHeader';
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
+import { QueryClient, QueryClientProvider, useQuery, useMutation } from 'react-query'
+import { fetchThings, startChat } from '../api/apiCalls';
 
 
 const queryClient = new QueryClient()
 
 const startingHistory = [
   {
-    type: "bot",
-    message: "Hi"
+    role: ChatUserType.assistant,
+    content: "Hi"
   },
   {
-    type: "user",
-    message: "Hiiii"
+    role: ChatUserType.user,
+    content: "Hiiii"
   },
   {
-    type: "bot",
-    message: "How is your day?"
+    role: ChatUserType.assistant,
+    content: "How is your day?"
   }
 ]
-
-function fetchThings() {
-
-  const request = {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-    url: 'http://localhost:8081/'
-  }
-
-  return fetch(request.url, request)
-    .then(res => res.json())
-}
 
 
 const _App = () => {
@@ -44,17 +33,39 @@ const _App = () => {
 
   const [history, setHistory] = useState(startingHistory)
 
-  function handleSubmit(value: string) {
-    setHistory([...history, { type: "user", message: value }, { type: "bot", message: "I'm thinking....." }])
+  const mutation = useMutation(startChat, {
+    onSuccess: (data) => {
+      // Invalidate and refetch
+      // queryClient.invalidateQueries('todos')
+      console.log(data)
+      console.log(...history)
+      setHistory([...history, data])
+    },
+  })
+
+  const handleMutation = async (value: string) => {
+    const helpfulAssistent = {
+      role: ChatUserType.system,
+      content: "You are a helpful assistant"
+    }
+    const newHistory = [helpfulAssistent, ...history, { role: ChatUserType.user, content: value }]
+
+    mutation.mutate(newHistory)
   }
 
-  useEffect(() => {
+  async function handleSubmit(value: string) {
+    await setHistory([...history, { role: ChatUserType.user, content: value }])
 
-    if (info.data) {
-      console.log(info.data.hello)
-    }
+    handleMutation(value)
+  }
 
-  }, [info])
+  // useEffect(() => {
+
+  //   if (chat.data) {
+  //     console.log(chat.data)
+  //   }
+
+  // }, [chat])
 
   return (
     <div >
