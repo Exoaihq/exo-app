@@ -39,7 +39,6 @@ const createWindow = (): void => {
     console.log('test-invoke', args.test)
 
     const directory = "/Users/kg/Repos/code-gen-app/"
-    console.log(directory)
     const files = fs.readdirSync(directory)
     // const files = fs.readdirSync(directory).map((file: any) => {
     //   console.log(file)
