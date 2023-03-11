@@ -9,6 +9,15 @@ import { QueryClient, QueryClientProvider, useQuery, useMutation } from 'react-q
 import { fetchThings, startChat } from '../api/apiCalls';
 
 
+declare global {
+  interface Window {
+    api: {
+      testInvoke: (arg: any) => Promise<any>
+    },
+  }
+}
+
+
 const queryClient = new QueryClient()
 
 const startingHistory = [
@@ -24,6 +33,8 @@ const _App = () => {
   const info = useQuery('todos', fetchThings)
 
   const [history, setHistory] = useState(startingHistory)
+
+
 
   const mutation = useMutation(startChat, {
     onSuccess: (data) => {
@@ -47,13 +58,13 @@ const _App = () => {
     handleMutation(value)
   }
 
-  // useEffect(() => {
+  async function getProfile() {
+    const profile = await window.api.testInvoke({ test: "test test test" })
+  }
 
-  //   if (chat.data) {
-  //     console.log(chat.data)
-  //   }
-
-  // }, [chat])
+  useEffect(() => {
+    getProfile()
+  }, [])
 
   return (
     <div >
