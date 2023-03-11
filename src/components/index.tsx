@@ -14,16 +14,8 @@ const queryClient = new QueryClient()
 const startingHistory = [
   {
     role: ChatUserType.assistant,
-    content: "Hi"
+    content: "Hi Kevin! I'm your assistant, Mia. How can I help you?"
   },
-  {
-    role: ChatUserType.user,
-    content: "Hiiii"
-  },
-  {
-    role: ChatUserType.assistant,
-    content: "How is your day?"
-  }
 ]
 
 
@@ -35,10 +27,6 @@ const _App = () => {
 
   const mutation = useMutation(startChat, {
     onSuccess: (data) => {
-      // Invalidate and refetch
-      // queryClient.invalidateQueries('todos')
-      console.log(data)
-      console.log(...history)
       setHistory([...history, data])
     },
   })
