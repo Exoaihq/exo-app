@@ -6,13 +6,13 @@ export enum ChatUserType {
     assistant = "assistant"
 }
 
-export interface ChatHistoryProps {
+export interface ChatMessage {
     role: ChatUserType;
     content: string;
 }
 
 
-function ChatHistory({ history }: { history: ChatHistoryProps[] }) {
+function ChatHistory({ history }: { history: ChatMessage[] }) {
     const messagesEndRef = useRef(null)
 
     function scrollToBottom() {
