@@ -41,14 +41,15 @@ const _App = () => {
   const [history, setHistory] = useState(startingHistory)
   const [code, setCode] = useState("")
   const [isCodeCompletion, setIsCodeCompletion] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [codeDetails, setCodeDetails] = useState<CodeCompletionDetails>({
-    projectFile: "",
-    requiredFunctionality: ""
+    projectFile: "closeIcon.ts",
+    requiredFunctionality: "Write a react component that adds a small x icon to a paragraph tag to clear the content."
   })
 
   const [codeDirectory, setCodeDirectory] = useState<CodeDirectory>({
-    projectDirectory: "",
-    refactorExistingCode: null,
+    projectDirectory: "/Users/kg/Repos/code-gen-server/example",
+    refactorExistingCode: false,
   })
 
   const chat = useMutation(startChat, {
@@ -78,9 +79,11 @@ const _App = () => {
         }
 
       }
-
       setHistory([...history, res])
     },
+    onSettled: () => {
+      setLoading(false)
+    }
   })
 
   const handleChatMutation = async (value: string) => {
@@ -89,20 +92,32 @@ const _App = () => {
       content: "You are a helpful assistant"
     }
     const newHistory = [helpfulAssistent, ...history, { role: ChatUserType.user, content: value }]
-
+    setLoading(true)
     chat.mutate(newHistory)
   }
 
 
   const handleCodeChatMutation = async (value: string) => {
-
+    setLoading(true)
     const newHistory = [...history, { role: ChatUserType.user, content: value }]
 
     useCodeCompletion.mutate({ messages: newHistory, codeDirectory, codeDetails })
 
   }
 
-  // const response = useQuery('todo', runCodeParsing)
+
+  function clearItem(item: string) {
+    if (item === "projectDirectory") {
+      setCodeDirectory({ ...codeDirectory, projectDirectory: "" })
+    } else if (item === "refactorExistingCode") {
+      setCodeDirectory({ ...codeDirectory, refactorExistingCode: null })
+    } else if (item === "projectFile") {
+      setCodeDetails({ ...codeDetails, projectFile: "" })
+    } else if (item === "requiredFunctionality") {
+      setCodeDetails({ ...codeDetails, requiredFunctionality: "" })
+    }
+  }
+
 
 
   async function handleSubmit(value: string) {
@@ -120,13 +135,11 @@ const _App = () => {
 
   useEffect(() => {
     getProfile()
-  }, [])
+  }, [codeDirectory])
 
   useEffect(() => {
 
     if (codeDirectory.projectDirectory && codeDirectory.refactorExistingCode === false) {
-      console.log("We have the answer!")
-      // Start the code completion
       setTimeout(() => {
         setHistory([...history, { role: ChatUserType.assistant, content: "So you want to create a new file in your directory..." }])
       }, 2000)
@@ -136,13 +149,12 @@ const _App = () => {
 
   useEffect(() => {
 
-    if (codeDetails.projectFile && codeDetails.requiredFunctionality) {
+    if (codeDirectory.refactorExistingCode === false && codeDetails.projectFile && codeDetails.requiredFunctionality) {
       console.log("We have this file and functionality!")
       // Start the code completion
       setTimeout(() => {
         setHistory([...history, { role: ChatUserType.assistant, content: "Do you want me to create this file with this functionality?" }])
       }, 2000)
-
     }
   }, [codeDetails])
 
@@ -153,12 +165,12 @@ const _App = () => {
 
         <div >
           <ChatHeader />
-          <ChatHistory history={history} />
+          <ChatHistory history={history} loading={loading} />
           <ChatInput handleSubmit={handleSubmit} />
         </div>
         <div  >
           <ScratchPadHeader />
-          <ScratchPadContainer codeDirectory={codeDirectory} codeDetails={codeDetails} />
+          <ScratchPadContainer codeDirectory={codeDirectory} codeDetails={codeDetails} clearItem={clearItem} />
           <div className='max-w-md'>
             {code && <pre>{JSON.stringify(code, null, 2)}</pre>}
           </div>

@@ -12,8 +12,30 @@ export interface ChatMessage {
     content: string;
 }
 
+function ClearButton({ clearText }: { clearText: React.MouseEventHandler<HTMLButtonElement> }) {
 
-function ScratchPadContainer(props: { codeDirectory: CodeDirectory, codeDetails: CodeCompletionDetails }) {
+    return (
+        <button
+            onClick={clearText}
+            style={{
+                position: 'relative',
+                top: -5,
+                right: -5,
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                color: 'red',
+                lineHeight: 1,
+            }}
+        >
+            &times;
+        </button>
+    )
+}
+
+
+function ScratchPadContainer(props: { codeDirectory: CodeDirectory, codeDetails: CodeCompletionDetails, clearItem: (item: string) => void }) {
     const messagesEndRef = useRef(null)
 
     const { projectDirectory, refactorExistingCode } = props.codeDirectory
@@ -23,6 +45,10 @@ function ScratchPadContainer(props: { codeDirectory: CodeDirectory, codeDetails:
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }
 
+    const clearText = (item: string) => {
+        props.clearItem(item)
+    };
+
     useEffect(() => {
         scrollToBottom()
     }, [history])
@@ -31,12 +57,12 @@ function ScratchPadContainer(props: { codeDirectory: CodeDirectory, codeDetails:
         <div className="relative w-full p-6 overflow-y-auto h-[40rem]" >
 
             <ul className="space-y-2 h-full" >
-                <p>Project directory: {projectDirectory} </p>
+                {projectDirectory && <p>Project directory: {projectDirectory} <ClearButton clearText={() => clearText("projectDirectory")} /> </p>}
 
-                <p>Refactor: {refactorExistingCode !== null && (refactorExistingCode ? "Yes" : "No")} </p>
+                {refactorExistingCode !== null && <p>Refactor: {refactorExistingCode !== null && (refactorExistingCode ? "Yes" : "No")} <ClearButton clearText={() => clearText("refactorExistingCode")} />  </p>}
 
-                {projectFile && <p>Code file: {projectFile} </p>}
-                {requiredFunctionality && <p>Functionality: {requiredFunctionality} </p>}
+                {projectFile && <p>Code file: {projectFile} <ClearButton clearText={() => clearText("projectFile")} />  </p>}
+                {requiredFunctionality && <p>Functionality: {requiredFunctionality} <ClearButton clearText={() => clearText("requiredFunctionality")} />  </p>}
 
 
             </ul>
