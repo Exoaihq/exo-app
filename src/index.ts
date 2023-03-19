@@ -1,4 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
+import { simpleGit, SimpleGit, CleanOptions, SimpleGitOptions } from 'simple-git';
+
 const fs = require('fs')
 const path = require('path')
 
@@ -35,11 +37,33 @@ const createWindow = (): void => {
   //   win.setTitle(title)
   // })
 
-  ipcMain.handle('test-invoke', (event, args) => {
+  ipcMain.handle('test-invoke', async (event, args) => {
     console.log('test-invoke', args.test)
+    console.log(process.cwd());
+
+    const options: Partial<SimpleGitOptions> = {
+      baseDir: process.cwd(),
+      binary: 'git',
+      maxConcurrentProcesses: 6,
+      trimmed: false,
+    };
+
+    const git: SimpleGit = simpleGit(options);
+
+    const gitDiffOptions = [
+      "--word-diff",
+      "--unified=0"
+    ]
+
+    const diff = await git.diff(gitDiffOptions)
+    // console.log(diff.split('@@'))
+
+    // const parsedDiff = parseGitDiff(diff)
+    // console.log(parsedDiff)
+
 
     const directory = "/Users/kg/Repos/code-gen-app/"
-    const files = fs.readdirSync(directory)
+    // const files = fs.readdirSync(directory)
     // const files = fs.readdirSync(directory).map((file: any) => {
     //   console.log(file)
     //   const stats = fs.statSync(path.join(path, file))
@@ -55,7 +79,7 @@ const createWindow = (): void => {
     //     return a.directory ? -1 : 1
     //   })
 
-    console.log(files)
+    // console.log(files)
 
     return 'test-invoke'
   })
