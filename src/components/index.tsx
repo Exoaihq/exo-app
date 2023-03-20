@@ -13,7 +13,6 @@ import ScratchPadHeader from './scratchPadHeader';
 declare global {
   interface Window {
     api: {
-      testInvoke: (arg: any) => Promise<any>,
       createOrUpdateFile: (response: OpenAiResponseAndMetadata) => Promise<any>,
     },
   }
@@ -42,13 +41,13 @@ const _App = () => {
   const [isCodeCompletion, setIsCodeCompletion] = useState(true)
   const [loading, setLoading] = useState(false)
   const [codeDetails, setCodeDetails] = useState<CodeCompletionDetails>({
-    projectFile: "icon.ts",
-    requiredFunctionality: "Write a react component that adds a small x icon to a paragraph tag to clear the content."
+    projectFile: "",
+    requiredFunctionality: ""
   })
 
   const [codeDirectory, setCodeDirectory] = useState<CodeDirectory>({
-    projectDirectory: "/Users/kg/Repos/code-gen-server/example",
-    refactorExistingCode: false,
+    projectDirectory: "",
+    refactorExistingCode: null,
   })
 
   const chat = useMutation(startChat, {
@@ -141,14 +140,6 @@ const _App = () => {
       handleChatMutation(value)
     }
   }
-
-  async function getProfile() {
-    const profile = await window.api.testInvoke({ test: "test test test" })
-  }
-
-  useEffect(() => {
-    getProfile()
-  }, [codeDirectory])
 
   useEffect(() => {
 

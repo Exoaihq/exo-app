@@ -6,8 +6,6 @@ import { OpenAiResponseAndMetadata } from "./api/apiCalls";
 const { ipcRenderer, contextBridge } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
-    // Invoke Methods
-    testInvoke: (args: any) => ipcRenderer.invoke('test-invoke', args),
     // Send Methods
     testSend: (args: any) => ipcRenderer.send('test-send', args),
     // Receive Methods

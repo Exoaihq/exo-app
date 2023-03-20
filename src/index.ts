@@ -77,53 +77,6 @@ const createWindow = (): void => {
     createFileFromResponse(response)
   })
 
-  ipcMain.handle('test-invoke', async (event, args) => {
-    console.log('test-invoke', args.test)
-    console.log(process.cwd());
-
-    const options: Partial<SimpleGitOptions> = {
-      baseDir: process.cwd(),
-      binary: 'git',
-      maxConcurrentProcesses: 6,
-      trimmed: false,
-    };
-
-    const git: SimpleGit = simpleGit(options);
-
-    const gitDiffOptions = [
-      "--word-diff",
-      "--unified=0"
-    ]
-
-    const diff = await git.diff(gitDiffOptions)
-    // console.log(diff.split('@@'))
-
-    // const parsedDiff = parseGitDiff(diff)
-    // console.log(parsedDiff)
-
-
-    const directory = "/Users/kg/Repos/code-gen-app/"
-    // const files = fs.readdirSync(directory)
-    // const files = fs.readdirSync(directory).map((file: any) => {
-    //   console.log(file)
-    //   const stats = fs.statSync(path.join(path, file))
-    //   return {
-    //     name: file,
-    //     directory: stats.isDirectory()
-    //   }
-    // })
-    //   .sort((a: any, b: any) => {
-    //     if (a.directory === b.directory) {
-    //       return a.name.localeCompare(b.name)
-    //     }
-    //     return a.directory ? -1 : 1
-    //   })
-
-    // console.log(files)
-
-    return 'test-invoke'
-  })
-
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 };
