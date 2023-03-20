@@ -1,24 +1,23 @@
 
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { QueryClient, QueryClientProvider, useMutation } from 'react-query';
+import { codeCompletion, CodeCompletionDetails, CodeDirectory, OpenAiResponseAndMetadata, startChat } from '../api/apiCalls';
 import ChatHeader from './chatHeader';
 import ChatHistory, { ChatUserType } from './chatHistory';
 import ChatInput from './chatInput';
-import ScratchPadHeader from './scratchPadHeader';
-import { QueryClient, QueryClientProvider, useQuery, useMutation } from 'react-query'
-import { codeCompletion, CodeCompletionDetails, CodeDirectory, fetchThings, runCodeParsing, startChat } from '../api/apiCalls';
-import ScratchPadContainer from './scratchPadContainer';
 import { deserializeJson } from './deserialize';
+import ScratchPadContainer from './scratchPadContainer';
+import ScratchPadHeader from './scratchPadHeader';
 
 
 declare global {
   interface Window {
     api: {
-      testInvoke: (arg: any) => Promise<any>
+      testInvoke: (arg: any) => Promise<any>,
+      createOrUpdateFile: (response: OpenAiResponseAndMetadata) => Promise<any>,
     },
   }
 }
-
 
 const queryClient = new QueryClient()
 
@@ -43,7 +42,7 @@ const _App = () => {
   const [isCodeCompletion, setIsCodeCompletion] = useState(true)
   const [loading, setLoading] = useState(false)
   const [codeDetails, setCodeDetails] = useState<CodeCompletionDetails>({
-    projectFile: "closeIcon.ts",
+    projectFile: "icon.ts",
     requiredFunctionality: "Write a react component that adds a small x icon to a paragraph tag to clear the content."
   })
 
@@ -67,19 +66,33 @@ const _App = () => {
 
 
   const useCodeCompletion = useMutation(codeCompletion, {
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
 
-      const found = deserializeJson(res.content)
-      if (found) {
 
-        if (directoryComplete()) {
-          setCodeDetails(found)
-        } else {
-          setCodeDirectory(found)
+      const { openAiResponse, metadata } = res
+      const { choices } = openAiResponse
+      let message = choices[0]?.message
+
+      if (metadata && metadata.type) {
+        await window.api.createOrUpdateFile(res)
+
+        const content = openAiResponse.choices[0].message?.content ? openAiResponse.choices[0].message?.content : ""
+        const splitOnQuotes = content.split("```")
+        message.content = splitOnQuotes[0]
+      } else {
+        const found = deserializeJson(message.content)
+        if (found) {
+  
+          if (directoryComplete()) {
+            setCodeDetails(found)
+          } else {
+            setCodeDirectory(found)
+          }
         }
-
       }
-      setHistory([...history, res])
+
+     
+      setHistory([...history, message])
     },
     onSettled: () => {
       setLoading(false)
@@ -174,7 +187,6 @@ const _App = () => {
           <div className='max-w-md'>
             {code && <pre>{JSON.stringify(code, null, 2)}</pre>}
           </div>
-
         </div>
       </div>
 

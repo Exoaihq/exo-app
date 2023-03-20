@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { simpleGit, SimpleGit, CleanOptions, SimpleGitOptions } from 'simple-git';
+import { CodeCompletionResponseType, OpenAiResponseAndMetadata } from './api/apiCalls';
 
 const fs = require('fs')
 const path = require('path')
@@ -13,6 +14,48 @@ declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
+}
+
+export function createFile(fileName: string, text: string, folder: string = './src') {
+  const location = path.join(folder, fileName);
+  fs.writeFile(location, text, (err: any) => {
+      if (err) throw err;
+      console.log(`${location} has been created and populated with text.`);
+  });
+}
+
+export async function overwriteFile(filePath: string, code: string) {
+  await fs.writeFile(filePath, code, (err: any) => err && console.log(err));
+}
+
+export async function createFileFromResponse(response: OpenAiResponseAndMetadata) {
+
+  const { openAiResponse, metadata } = response
+  const {type, projectDirectory, projectFile} = metadata
+
+  if (type === CodeCompletionResponseType.newFile) {
+      const content = openAiResponse.choices[0].message?.content ? openAiResponse.choices[0].message?.content : ""
+
+      if (content.includes("```")) {
+          const splitOnQuotes = content.split("```")
+          createFile(projectFile, splitOnQuotes[1], projectDirectory)
+      } else {
+          createFile(projectFile, content, projectDirectory)
+      }
+
+  }
+  
+  if (type === CodeCompletionResponseType.updateFile) {
+      const content = openAiResponse.choices[0].message?.content ? openAiResponse.choices[0].message?.content : ""
+      if (content) {
+        if (content.includes("```")) {
+          const splitOnQuotes = content.split("```")
+          overwriteFile(projectDirectory + "/" + projectFile, splitOnQuotes[1])
+      } else {
+        overwriteFile(projectDirectory + "/" + projectFile, content)
+      }
+      }
+  }
 }
 
 const createWindow = (): void => {
@@ -30,12 +73,9 @@ const createWindow = (): void => {
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // ipcMain.on('test-invoke', (event, title) => {
-  //   console.log('test-invoke', title, event)
-  //   const webContents = event.sender
-  //   const win = BrowserWindow.fromWebContents(webContents)
-  //   win.setTitle(title)
-  // })
+  ipcMain.handle('create-or-update-file', (event, response) => {
+    createFileFromResponse(response)
+  })
 
   ipcMain.handle('test-invoke', async (event, args) => {
     console.log('test-invoke', args.test)

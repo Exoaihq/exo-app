@@ -68,16 +68,34 @@ export interface Choices {
     message: ChatMessage,
 }
 
-export interface CodeCompletionResponseObject {
+export interface OpenAiResponseObject {
     id: string,
     choices: Choices[],
 }
 
-export interface CodeCompletionResponse {
-    data: CodeCompletionResponseObject
+export enum CodeCompletionResponseType {
+    newFile = "newFile",
+    updateFile = "updateFile",
 }
 
-export function codeCompletion(req: CodeCompletionRequest): Promise<ChatMessage> {
+export interface CodeCompletionResponseMetadata {
+    type: CodeCompletionResponseType | undefined
+    projectDirectory: string,
+    projectFile: string,
+}
+
+
+export interface OpenAiResponseAndMetadata {
+    openAiResponse: OpenAiResponseObject,
+    metadata: CodeCompletionResponseMetadata
+}
+
+export interface CodeCompletionResponse {
+    data: OpenAiResponseAndMetadata
+}
+
+
+export function codeCompletion(req: CodeCompletionRequest): Promise<OpenAiResponseAndMetadata> {
 
     const request = {
         method: 'POST',
@@ -90,9 +108,8 @@ export function codeCompletion(req: CodeCompletionRequest): Promise<ChatMessage>
         .then(res => res.json())
         .then((res: CodeCompletionResponse) => {
             const { data } = res
-            console.log(data)
 
-            return data.choices[0].message
+            return data
         })
 }
 
