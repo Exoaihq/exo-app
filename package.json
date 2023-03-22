@@ -11,7 +11,7 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
-    "build": "todesktop build",
+    "build": "yarn make && todesktop build",
     "release": "todesktop release"
   },
   "keywords": [],
