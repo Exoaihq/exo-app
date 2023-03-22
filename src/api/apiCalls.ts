@@ -1,25 +1,24 @@
-import { ChatMessage, ChatUserType } from "../components/chatHistory"
+import { ChatMessage } from "../components/chatHistory"
 
 
-
-export function fetchThings() {
+export function fetchThings(baseUrl: string) {
 
     const request = {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
-        url: 'http://localhost:8081/'
+        url: baseUrl
     }
 
     return fetch(request.url, request)
         .then(res => res.json())
 }
 
-export function runCodeParsing() {
+export function runCodeParsing(baseUrl: string) {
 
     const request = {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
-        url: 'http://localhost:8081/code-snippet/parse-nodes'
+        url: baseUrl + '/code-snippet/parse-nodes'
     }
 
     return fetch(request.url, request)
@@ -27,12 +26,12 @@ export function runCodeParsing() {
 }
 
 
-export function startChat(history: ChatMessage[]) {
+export function startChat(history: ChatMessage[], baseUrl: string) {
 
     const request = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        url: 'http://localhost:8081/chat',
+        url:  baseUrl + '/chat',
         body: JSON.stringify(history)
     }
 
@@ -59,7 +58,8 @@ export interface CodeDirectory {
 export interface CodeCompletionRequest {
     messages: ChatMessage[],
     codeDirectory: CodeDirectory,
-    codeDetails: CodeCompletionDetails
+    codeDetails: CodeCompletionDetails,
+    baseApiUrl: string
 }
 
 export interface Choices {
@@ -100,8 +100,12 @@ export function codeCompletion(req: CodeCompletionRequest): Promise<OpenAiRespon
     const request = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        url: 'http://localhost:8081/code',
-        body: JSON.stringify(req)
+        url: req.baseApiUrl + '/code',
+        body: JSON.stringify({
+            messages: req.messages,
+            codeDirectory: req.codeDirectory,
+            codeDetails: req.codeDetails
+        })
     }
 
     return fetch(request.url, request)
