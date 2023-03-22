@@ -1,7 +1,7 @@
 {
-    "id": "230320mhfxzn9p5",
-    "icon": "./icon.png",
-    "appPath": ".",
-    "schemaVersion": 1,
-    "appFiles": ["dist/**/*.js", "index.html", "icon.png"]
-  }
+  "id": "230302rziwtjxeu",
+  "icon": "./icon.png",
+  "appPath": ".",
+  "schemaVersion": 1,
+  "appFiles": [".webpack/**", "package.json", "yarn.lock"]
+}
