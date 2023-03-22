@@ -3,5 +3,6 @@
   "icon": "./icon.png",
   "appPath": ".",
   "schemaVersion": 1,
-  "appFiles": [".webpack/**", "package.json", "yarn.lock"]
+  "appFiles": [".webpack/**", "package.json", "yarn.lock"],
+  "nodeVersion": "18.12.1"
 }
