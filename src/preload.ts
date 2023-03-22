@@ -9,7 +9,8 @@ contextBridge.exposeInMainWorld('api', {
     // Send Methods
     testSend: (args: any) => ipcRenderer.send('test-send', args),
     // Receive Methods
-    testReceive: (callback: any) => ipcRenderer.on('test-receive', (event, data) => { callback(data) }),
+    getBaseApiUrl: async () => await ipcRenderer.invoke('process'),
 
     createOrUpdateFile: (response: OpenAiResponseAndMetadata) => ipcRenderer.invoke('create-or-update-file', response),
+
 });
