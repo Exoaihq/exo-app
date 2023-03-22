@@ -23,6 +23,7 @@
   "devDependencies": {
     "@babel/core": "^7.21.0",
     "@babel/preset-react": "^7.18.6",
+    "@electron-forge/cli": "^6.0.5",
     "@electron-forge/maker-deb": "^6.0.5",
     "@electron-forge/maker-rpm": "^6.0.5",
     "@electron-forge/maker-squirrel": "^6.0.5",
