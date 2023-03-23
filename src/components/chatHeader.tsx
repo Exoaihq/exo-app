@@ -1,4 +1,4 @@
-function ChatHeader() {
+function ChatHeader({ handleLogout }: any) {
   return (
     <div className="relative flex items-center p-3 border-b border-gray-300">
       <a className="flex" href="https://www.getexo.dev/" target="_blank">
@@ -10,6 +10,14 @@ function ChatHeader() {
         />
         <span className="block ml-4 font-bold text-gray-600">Exo</span>
       </a>
+      {handleLogout && (
+        <button
+          className="absolute top-4 right-2 ml-4 text-gray-500"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
+      )}
     </div>
   );
 }

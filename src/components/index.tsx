@@ -1,3 +1,4 @@
+import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider, useMutation } from "react-query";
 import {
@@ -11,6 +12,7 @@ import ChatHeader from "./chatHeader";
 import ChatHistory, { ChatUserType } from "./chatHistory";
 import ChatInput from "./chatInput";
 import { deserializeJson } from "./deserialize";
+import LoginForm from "./Login";
 import ScratchPadContainer from "./scratchPadContainer";
 import ScratchPadHeader from "./scratchPadHeader";
 
@@ -25,6 +27,11 @@ declare global {
 
 const queryClient = new QueryClient();
 
+const supabase = createClient(
+  "https://xexjtohvdexqxpomspdb.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhleGp0b2h2ZGV4cXhwb21zcGRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzgzMDg0MjYsImV4cCI6MTk5Mzg4NDQyNn0.-3oqirs2PwoAS42jmB47QE-A1GSyUBxsdLsNz_8dDgk"
+);
+
 const startingHistory = [
   {
     role: ChatUserType.assistant,
@@ -36,6 +43,9 @@ const _App = () => {
   const [baseApiUrl, setBaseApiUrl] = useState(
     "https://code-gen-server.herokuapp.com"
   );
+
+  const [session, setSession] = useState(null);
+  const [loginErrorMessage, setLoginErrorMessage] = useState(null);
   const [history, setHistory] = useState(startingHistory);
   const [code, setCode] = useState("");
   const [isCodeCompletion, setIsCodeCompletion] = useState(true);
@@ -49,6 +59,23 @@ const _App = () => {
     projectDirectory: "",
     refactorExistingCode: null,
   });
+
+  async function handleLogin(email: string, password: string) {
+    const res = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (res.error) {
+      setLoginErrorMessage(res.error.message);
+    } else {
+      setSession(res.data.session);
+    }
+  }
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setSession(null);
+  }
 
   const chat = useMutation(startChat, {
     onSuccess: (data) => {
@@ -72,8 +99,6 @@ const _App = () => {
       const { choices } = openAiResponse;
       const message = choices[0]?.message;
 
-      console.log(message);
-
       if (metadata && metadata.type) {
         await window.api.createOrUpdateFile(res);
 
@@ -82,7 +107,7 @@ const _App = () => {
           : "";
         const splitOnQuotes = content.split("```");
         message.content = splitOnQuotes[0];
-      } else {
+      } else if (message && message.content) {
         const found = deserializeJson(message.content);
         if (found) {
           if (directoryComplete()) {
@@ -94,6 +119,12 @@ const _App = () => {
       }
 
       setHistory([...history, message]);
+    },
+    onError(error: Error) {
+      setHistory([
+        ...history,
+        { role: ChatUserType.assistant, content: error.message },
+      ]);
     },
     onSettled: () => {
       setLoading(false);
@@ -111,7 +142,7 @@ const _App = () => {
       { role: ChatUserType.user, content: value },
     ];
     setLoading(true);
-    chat.mutate({ history: newHistory, baseApiUrl });
+    chat.mutate({ history: newHistory, baseApiUrl, session });
   };
 
   const handleCodeChatMutation = async (value: string) => {
@@ -126,6 +157,7 @@ const _App = () => {
       codeDirectory,
       codeDetails,
       baseApiUrl,
+      session,
     });
   };
 
@@ -173,7 +205,6 @@ const _App = () => {
       codeDetails.projectFile &&
       codeDetails.requiredFunctionality
     ) {
-      console.log("We have this file and functionality!");
       // Start the code completion
       setTimeout(() => {
         setHistory([
@@ -188,29 +219,49 @@ const _App = () => {
     }
   }, [codeDetails]);
 
+  async function getSession() {
+    const returnedSession = await supabase.auth.getSession();
+
+    setSession(returnedSession.data.session);
+  }
+
   useEffect(() => {
     if (window) {
       window.api.getBaseApiUrl().then((res) => {
         setBaseApiUrl(res);
       });
+      getSession();
     }
   }, [window]);
 
   return (
-    <div className="min-w-full border rounded grid grid-cols-2 gap-4  divide-x">
-      <div>
-        <ChatHeader />
-        <ChatHistory history={history} loading={loading} />
-        <ChatInput handleSubmit={handleSubmit} />
-      </div>
-      <div>
-        <ScratchPadHeader />
-        <ScratchPadContainer
-          codeDirectory={codeDirectory}
-          codeDetails={codeDetails}
-          clearItem={clearItem}
-        />
-      </div>
+    <div>
+      {session && (
+        <div className="min-w-full border rounded grid grid-cols-2 gap-4  divide-x">
+          <div>
+            <ChatHeader handleLogout={handleLogout} />
+            <ChatHistory history={history} loading={loading} />
+            <ChatInput handleSubmit={handleSubmit} />
+          </div>
+          <div>
+            <ScratchPadHeader />
+            <ScratchPadContainer
+              codeDirectory={codeDirectory}
+              codeDetails={codeDetails}
+              clearItem={clearItem}
+            />
+          </div>
+        </div>
+      )}
+      {!session && (
+        <div className="flex flex-col h-screen">
+          <ChatHeader handleLogout={null} />
+          <LoginForm
+            handleLogin={handleLogin}
+            loginErrorMessage={loginErrorMessage}
+          />
+        </div>
+      )}
     </div>
   );
 };
