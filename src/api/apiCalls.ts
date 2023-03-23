@@ -25,14 +25,20 @@ export function runCodeParsing(baseUrl: string) {
         .then(res => res.json())
 }
 
+export interface StartChatRequest {
+    history: ChatMessage[],
+    baseApiUrl: string
+}
 
-export function startChat(history: ChatMessage[], baseUrl: string) {
+export function startChat(req: StartChatRequest) {
 
     const request = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        url:  baseUrl + '/chat',
-        body: JSON.stringify(history)
+        url:  req.baseApiUrl + '/chat',
+        body: JSON.stringify({
+            history: req.history
+        })
     }
 
     return fetch(request.url, request)

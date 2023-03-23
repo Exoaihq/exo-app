@@ -1,6 +1,6 @@
 {
-  "name": "code-gen-app",
-  "productName": "code-gen-app",
+  "name": "exo-app",
+  "productName": "exo-app",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": ".webpack/main",

@@ -28,7 +28,7 @@ const queryClient = new QueryClient();
 const startingHistory = [
   {
     role: ChatUserType.assistant,
-    content: "Hi Kevin! I'm your assistant, Mia. How can I help you today?",
+    content: "Hi! I'm your trusty Exo assistant. How can I help you today?",
   },
 ];
 
@@ -70,7 +70,9 @@ const _App = () => {
     onSuccess: async (res) => {
       const { openAiResponse, metadata } = res;
       const { choices } = openAiResponse;
-      let message = choices[0]?.message;
+      const message = choices[0]?.message;
+
+      console.log(message);
 
       if (metadata && metadata.type) {
         await window.api.createOrUpdateFile(res);
@@ -109,7 +111,7 @@ const _App = () => {
       { role: ChatUserType.user, content: value },
     ];
     setLoading(true);
-    chat.mutate(newHistory);
+    chat.mutate({ history: newHistory, baseApiUrl });
   };
 
   const handleCodeChatMutation = async (value: string) => {
@@ -195,24 +197,19 @@ const _App = () => {
   }, [window]);
 
   return (
-    <div>
-      <div className="min-w-full border rounded grid grid-cols-2 gap-4  divide-x">
-        <div>
-          <ChatHeader />
-          <ChatHistory history={history} loading={loading} />
-          <ChatInput handleSubmit={handleSubmit} />
-        </div>
-        <div>
-          <ScratchPadHeader />
-          <ScratchPadContainer
-            codeDirectory={codeDirectory}
-            codeDetails={codeDetails}
-            clearItem={clearItem}
-          />
-          <div className="max-w-md">
-            {code && <pre>{JSON.stringify(code, null, 2)}</pre>}
-          </div>
-        </div>
+    <div className="min-w-full border rounded grid grid-cols-2 gap-4  divide-x">
+      <div>
+        <ChatHeader />
+        <ChatHistory history={history} loading={loading} />
+        <ChatInput handleSubmit={handleSubmit} />
+      </div>
+      <div>
+        <ScratchPadHeader />
+        <ScratchPadContainer
+          codeDirectory={codeDirectory}
+          codeDetails={codeDetails}
+          clearItem={clearItem}
+        />
       </div>
     </div>
   );

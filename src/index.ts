@@ -69,6 +69,7 @@ const createWindow = (): void => {
       contextIsolation: true,
       nodeIntegration: true
     },
+    icon: path.join(__dirname, 'assets/logo.ico')
   });
 
   // and load the index.html of the app.
@@ -82,11 +83,11 @@ const createWindow = (): void => {
     return baseApiUrl
   })
 
+  !app.isPackaged &&  mainWindow.webContents.openDevTools();
 
-
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
 };
+
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
