@@ -2,9 +2,9 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import { CodeCompletionResponseType, OpenAiResponseAndMetadata } from './api/apiCalls';
 
 import todesktop from '@todesktop/runtime';
+import { parseReturnedCode } from './utils/parsingReturnedCode';
+import { createFile, getFileContent, overwriteFile } from './utils/fileSystem';
 todesktop.init();
-
-const fs = require('fs')
 const path = require('path')
 
 const baseApiUrl = app.isPackaged ? "https://code-gen-server.herokuapp.com" : "http://localhost:8081"
@@ -15,47 +15,24 @@ const baseApiUrl = app.isPackaged ? "https://code-gen-server.herokuapp.com" : "h
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
-
-
-export function createFile(fileName: string, text: string, folder = './src') {
-  const location = path.join(folder, fileName);
-  fs.writeFile(location, text, (err: any) => {
-      if (err) throw err;
-      console.log(`${location} has been created and populated with text.`);
-  });
-}
-
-export async function overwriteFile(filePath: string, code: string) {
-  await fs.writeFile(filePath, code, (err: any) => err && console.log(err));
-}
-
 export async function createFileFromResponse(response: OpenAiResponseAndMetadata) {
 
   const { openAiResponse, metadata } = response
   const {type, projectDirectory, projectFile} = metadata
 
+  const content = openAiResponse.choices[0].message?.content ? openAiResponse.choices[0].message?.content : ""
+
   if (type === CodeCompletionResponseType.newFile) {
-      const content = openAiResponse.choices[0].message?.content ? openAiResponse.choices[0].message?.content : ""
-
-      if (content.includes("```")) {
-          const splitOnQuotes = content.split("```")
-          createFile(projectFile, splitOnQuotes[1], projectDirectory)
-      } else {
-          createFile(projectFile, content, projectDirectory)
-      }
-
+    createFile(projectFile, parseReturnedCode(content, "code"), projectDirectory)
+  
   }
+
+  // TODO - response did not return any code it returned this:
+  //It seems that the content of the file has an `<h1>` tag, but the refactor request asks to change an `<h2>` tag to an `<h3>`. Could you please confirm the correct tag that needs to be updated, or provide more details on the refactor?
+  // Should handle this case when the response is not code
   
   if (type === CodeCompletionResponseType.updateFile) {
-      const content = openAiResponse.choices[0].message?.content ? openAiResponse.choices[0].message?.content : ""
-      if (content) {
-        if (content.includes("```")) {
-          const splitOnQuotes = content.split("```")
-          overwriteFile(projectDirectory + "/" + projectFile, splitOnQuotes[1])
-      } else {
-        overwriteFile(projectDirectory + "/" + projectFile, content)
-      }
-      }
+    overwriteFile(projectDirectory + "/" + projectFile, parseReturnedCode(content, "code"))
   }
 }
 
@@ -77,6 +54,10 @@ const createWindow = (): void => {
 
   ipcMain.handle('create-or-update-file', (event, response) => {
     createFileFromResponse(response)
+  })
+
+  ipcMain.handle('get-file-contents', (event, response) => {
+    return getFileContent(response)
   })
 
   ipcMain.handle('process', (event, response) => {

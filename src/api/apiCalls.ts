@@ -68,7 +68,8 @@ export interface CodeCompletionRequest {
     codeDirectory: CodeDirectory,
     codeDetails: CodeCompletionDetails,
     baseApiUrl: string,
-    session: any
+    session: any,
+    codeContent: string
 }
 
 export interface Choices {
@@ -113,7 +114,8 @@ export function codeCompletion(req: CodeCompletionRequest): Promise<OpenAiRespon
         body: JSON.stringify({
             messages: req.messages,
             codeDirectory: req.codeDirectory,
-            codeDetails: req.codeDetails
+            codeDetails: req.codeDetails,
+            codeContent: req.codeContent
         })
     }
 

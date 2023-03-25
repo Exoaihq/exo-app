@@ -13,4 +13,6 @@ contextBridge.exposeInMainWorld('api', {
 
     createOrUpdateFile: (response: OpenAiResponseAndMetadata) => ipcRenderer.invoke('create-or-update-file', response),
 
+    getFile: (response: string) => ipcRenderer.invoke('get-file-contents', response),
+
 });

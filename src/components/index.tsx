@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider, useMutation } from "react-query";
+import { parseReturnedCode } from "../utils/parsingReturnedCode";
 import {
   codeCompletion,
   CodeCompletionDetails,
@@ -8,6 +9,7 @@ import {
   OpenAiResponseAndMetadata,
   startChat,
 } from "../api/apiCalls";
+import { getFunnyErrorMessage } from "../utils/awayMessages";
 import ChatHeader from "./chatHeader";
 import ChatHistory, { ChatUserType } from "./chatHistory";
 import ChatInput from "./chatInput";
@@ -21,6 +23,7 @@ declare global {
     api: {
       createOrUpdateFile: (response: OpenAiResponseAndMetadata) => Promise<any>;
       getBaseApiUrl: () => Promise<string>;
+      getFile: (path: string) => Promise<string>;
     };
   }
 }
@@ -39,6 +42,19 @@ const startingHistory = [
   },
 ];
 
+const testCodeCompletion = {
+  projectFile: "h3.ts",
+  requiredFunctionality:
+    "Write a typescript function that takes a string returns and new string with // in front of each of the folling words: html, tsx, jsx, ts, js, typescript, javascript. So it would like like this: //html //tsx //jsx //ts //j",
+};
+
+const testCodeDirectory = {
+  projectDirectory: "/Users/kg/Repos/exo-client/src/components",
+  refactorExistingCode: false,
+};
+
+const test = false;
+
 const _App = () => {
   const [baseApiUrl, setBaseApiUrl] = useState(
     "https://code-gen-server.herokuapp.com"
@@ -50,15 +66,23 @@ const _App = () => {
   const [code, setCode] = useState("");
   const [isCodeCompletion, setIsCodeCompletion] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [codeDetails, setCodeDetails] = useState<CodeCompletionDetails>({
-    projectFile: "",
-    requiredFunctionality: "",
-  });
+  const [codeDetails, setCodeDetails] = useState<CodeCompletionDetails>(
+    test
+      ? testCodeCompletion
+      : {
+          projectFile: "",
+          requiredFunctionality: "",
+        }
+  );
 
-  const [codeDirectory, setCodeDirectory] = useState<CodeDirectory>({
-    projectDirectory: "",
-    refactorExistingCode: null,
-  });
+  const [codeDirectory, setCodeDirectory] = useState<CodeDirectory>(
+    test
+      ? testCodeDirectory
+      : {
+          projectDirectory: "",
+          refactorExistingCode: null,
+        }
+  );
 
   async function handleLogin(email: string, password: string) {
     const res = await supabase.auth.signInWithPassword({
@@ -105,8 +129,9 @@ const _App = () => {
         const content = openAiResponse.choices[0].message?.content
           ? openAiResponse.choices[0].message?.content
           : "";
-        const splitOnQuotes = content.split("```");
-        message.content = splitOnQuotes[0];
+
+        message.content = parseReturnedCode(content, "message");
+        setCodeDetails({ ...codeDetails, requiredFunctionality: "" });
       } else if (message && message.content) {
         const found = deserializeJson(message.content);
         if (found) {
@@ -121,9 +146,10 @@ const _App = () => {
       setHistory([...history, message]);
     },
     onError(error: Error) {
+      console.log(error);
       setHistory([
         ...history,
-        { role: ChatUserType.assistant, content: error.message },
+        { role: ChatUserType.assistant, content: getFunnyErrorMessage() },
       ]);
     },
     onSettled: () => {
@@ -147,6 +173,29 @@ const _App = () => {
 
   const handleCodeChatMutation = async (value: string) => {
     setLoading(true);
+    const { projectFile } = codeDetails;
+    const { projectDirectory, refactorExistingCode } = codeDirectory;
+
+    let codeContent = "";
+    if (refactorExistingCode) {
+      try {
+        codeContent = await window.api.getFile(
+          projectDirectory + "/" + projectFile
+        );
+      } catch {
+        setHistory([
+          ...history,
+          {
+            role: ChatUserType.assistant,
+            content:
+              "I can't find that file. Can you confirm you have the correct directory and file name?",
+          },
+        ]);
+        setLoading(false);
+        return;
+      }
+    }
+
     const newHistory = [
       ...history,
       { role: ChatUserType.user, content: value },
@@ -158,6 +207,7 @@ const _App = () => {
       codeDetails,
       baseApiUrl,
       session,
+      codeContent,
     });
   };
 
@@ -183,16 +233,16 @@ const _App = () => {
   }
 
   useEffect(() => {
-    if (
-      codeDirectory.projectDirectory &&
-      codeDirectory.refactorExistingCode === false
-    ) {
+    const { projectDirectory, refactorExistingCode } = codeDirectory;
+    if (projectDirectory && refactorExistingCode !== null) {
       setTimeout(() => {
         setHistory([
           ...history,
           {
             role: ChatUserType.assistant,
-            content: "So you want to create a new file in your directory...",
+            content: refactorExistingCode
+              ? "Which file would you like to refactor?"
+              : "So you want to create a new file in your directory, what is the name of the file?",
           },
         ]);
       }, 2000);
