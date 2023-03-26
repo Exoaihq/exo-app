@@ -1,19 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider, useMutation } from "react-query";
-import { parseReturnedCode } from "../utils/parsingReturnedCode";
-import {
-  codeCompletion,
-  CodeCompletionDetails,
-  CodeDirectory,
-  OpenAiResponseAndMetadata,
-  startChat,
-} from "../api/apiCalls";
+import { codeCompletion, OpenAiResponseAndMetadata } from "../api/apiCalls";
 import { getFunnyErrorMessage } from "../utils/awayMessages";
 import ChatHeader from "./chatHeader";
 import ChatHistory, { ChatUserType } from "./chatHistory";
 import ChatInput from "./chatInput";
-import { deserializeJson } from "./deserialize";
 import LoginForm from "./Login";
 import ScratchPadContainer from "./scratchPadContainer";
 import ScratchPadHeader from "./scratchPadHeader";
@@ -42,16 +34,11 @@ const startingHistory = [
   },
 ];
 
-const testCodeCompletion = {
-  projectFile: "h3.ts",
-  requiredFunctionality:
-    "Write a typescript function that takes a string returns and new string with // in front of each of the folling words: html, tsx, jsx, ts, js, typescript, javascript. So it would like like this: //html //tsx //jsx //ts //j",
-};
-
-const testCodeDirectory = {
-  projectDirectory: "/Users/kg/Repos/exo-client/src/components",
-  refactorExistingCode: false,
-};
+const testFile = "newFile.ts";
+const testDirectory = "/Users/kg/Repos/exo-client/src/components";
+const testNewFile = true;
+const testRequiredFunctionality =
+  "Write a typescript function that takes a string returns and new string with // in front of each of the folling words: html, tsx, jsx, ts, js, typescript, javascript. So it would like like this: //html //tsx //jsx //ts //j";
 
 const test = false;
 
@@ -64,25 +51,15 @@ const _App = () => {
   const [loginErrorMessage, setLoginErrorMessage] = useState(null);
   const [history, setHistory] = useState(startingHistory);
   const [code, setCode] = useState("");
-  const [isCodeCompletion, setIsCodeCompletion] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [codeDetails, setCodeDetails] = useState<CodeCompletionDetails>(
-    test
-      ? testCodeCompletion
-      : {
-          projectFile: "",
-          requiredFunctionality: "",
-        }
+  const [projectDirectory, setProjectDirectory] = useState(
+    test ? testDirectory : ""
   );
-
-  const [codeDirectory, setCodeDirectory] = useState<CodeDirectory>(
-    test
-      ? testCodeDirectory
-      : {
-          projectDirectory: "",
-          refactorExistingCode: null,
-        }
+  const [projectFile, setProjectFile] = useState(test ? testFile : "");
+  const [requiredFunctionality, setRequiredFunctionality] = useState(
+    test ? testRequiredFunctionality : ""
   );
+  const [newFile, setNewFile] = useState(test ? testNewFile : null);
 
   async function handleLogin(email: string, password: string) {
     const res = await supabase.auth.signInWithPassword({
@@ -101,49 +78,28 @@ const _App = () => {
     setSession(null);
   }
 
-  const chat = useMutation(startChat, {
-    onSuccess: (data) => {
-      if (data.code) {
-        setCode(data.code);
-      }
-      setHistory([...history, data]);
-    },
-  });
-
-  function directoryComplete(): boolean {
-    return (
-      codeDirectory.projectDirectory &&
-      codeDirectory.refactorExistingCode !== null
-    );
-  }
-
   const useCodeCompletion = useMutation(codeCompletion, {
     onSuccess: async (res) => {
-      const { openAiResponse, metadata } = res;
-      const { choices } = openAiResponse;
-      const message = choices[0]?.message;
+      const { choices, metadata, completedCode } = res;
+      const { projectDirectory, projectFile, newFile, requiredFunctionality } =
+        metadata;
+      const messages = choices.map((choice) => {
+        return {
+          role: choice.message.role,
+          content: choice.message.content,
+        };
+      });
 
-      if (metadata && metadata.type) {
+      projectDirectory && setProjectDirectory(projectDirectory);
+      projectFile && setProjectFile(projectFile);
+      newFile !== null && setNewFile(newFile);
+      requiredFunctionality && setRequiredFunctionality(requiredFunctionality);
+
+      if (completedCode) {
         await window.api.createOrUpdateFile(res);
-
-        const content = openAiResponse.choices[0].message?.content
-          ? openAiResponse.choices[0].message?.content
-          : "";
-
-        message.content = parseReturnedCode(content, "message");
-        setCodeDetails({ ...codeDetails, requiredFunctionality: "" });
-      } else if (message && message.content) {
-        const found = deserializeJson(message.content);
-        if (found) {
-          if (directoryComplete()) {
-            setCodeDetails(found);
-          } else {
-            setCodeDirectory(found);
-          }
-        }
       }
 
-      setHistory([...history, message]);
+      setHistory([...history, ...messages]);
     },
     onError(error: Error) {
       console.log(error);
@@ -157,31 +113,19 @@ const _App = () => {
     },
   });
 
-  const handleChatMutation = async (value: string) => {
-    const helpfulAssistent = {
-      role: ChatUserType.system,
-      content: "You are a helpful assistant",
-    };
-    const newHistory = [
-      helpfulAssistent,
-      ...history,
-      { role: ChatUserType.user, content: value },
-    ];
-    setLoading(true);
-    chat.mutate({ history: newHistory, baseApiUrl, session });
-  };
-
   const handleCodeChatMutation = async (value: string) => {
     setLoading(true);
-    const { projectFile } = codeDetails;
-    const { projectDirectory, refactorExistingCode } = codeDirectory;
 
     let codeContent = "";
-    if (refactorExistingCode) {
+    console.log("newFile", newFile);
+    if (newFile === false && projectFile) {
       try {
+        const fullPath = projectDirectory + "/" + projectFile;
+        console.log("fullPath", fullPath);
         codeContent = await window.api.getFile(
           projectDirectory + "/" + projectFile
         );
+        console.log("codeContent", codeContent);
       } catch {
         setHistory([
           ...history,
@@ -203,8 +147,6 @@ const _App = () => {
 
     useCodeCompletion.mutate({
       messages: newHistory,
-      codeDirectory,
-      codeDetails,
       baseApiUrl,
       session,
       codeContent,
@@ -213,61 +155,21 @@ const _App = () => {
 
   function clearItem(item: string) {
     if (item === "projectDirectory") {
-      setCodeDirectory({ ...codeDirectory, projectDirectory: "" });
-    } else if (item === "refactorExistingCode") {
-      setCodeDirectory({ ...codeDirectory, refactorExistingCode: null });
+      setProjectDirectory("");
+    } else if (item === "newFile") {
+      setNewFile(null);
     } else if (item === "projectFile") {
-      setCodeDetails({ ...codeDetails, projectFile: "" });
+      setProjectFile("");
     } else if (item === "requiredFunctionality") {
-      setCodeDetails({ ...codeDetails, requiredFunctionality: "" });
+      setRequiredFunctionality("");
     }
   }
 
   async function handleSubmit(value: string) {
     await setHistory([...history, { role: ChatUserType.user, content: value }]);
-    if (isCodeCompletion) {
-      handleCodeChatMutation(value);
-    } else {
-      handleChatMutation(value);
-    }
+
+    handleCodeChatMutation(value);
   }
-
-  useEffect(() => {
-    const { projectDirectory, refactorExistingCode } = codeDirectory;
-    if (projectDirectory && refactorExistingCode !== null) {
-      setTimeout(() => {
-        setHistory([
-          ...history,
-          {
-            role: ChatUserType.assistant,
-            content: refactorExistingCode
-              ? "Which file would you like to refactor?"
-              : "So you want to create a new file in your directory, what is the name of the file?",
-          },
-        ]);
-      }, 2000);
-    }
-  }, [codeDirectory]);
-
-  useEffect(() => {
-    if (
-      codeDirectory.refactorExistingCode === false &&
-      codeDetails.projectFile &&
-      codeDetails.requiredFunctionality
-    ) {
-      // Start the code completion
-      setTimeout(() => {
-        setHistory([
-          ...history,
-          {
-            role: ChatUserType.assistant,
-            content:
-              "Do you want me to create this file with this functionality?",
-          },
-        ]);
-      }, 2000);
-    }
-  }, [codeDetails]);
 
   async function getSession() {
     const returnedSession = await supabase.auth.getSession();
@@ -296,8 +198,10 @@ const _App = () => {
           <div>
             <ScratchPadHeader />
             <ScratchPadContainer
-              codeDirectory={codeDirectory}
-              codeDetails={codeDetails}
+              projectDirectory={projectDirectory}
+              projectFile={projectFile}
+              requiredFunctionality={requiredFunctionality}
+              newFile={newFile}
               clearItem={clearItem}
             />
           </div>
