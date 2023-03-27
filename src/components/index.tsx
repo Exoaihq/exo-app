@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider, useMutation } from "react-query";
+import { textIncludeScratchPad } from "../utils/parsingReturnedCode";
 import { codeCompletion, OpenAiResponseAndMetadata } from "../api/apiCalls";
 import { getFunnyErrorMessage } from "../utils/awayMessages";
 import ChatHeader from "./chatHeader";
@@ -62,7 +63,6 @@ const _App = () => {
   const [newFile, setNewFile] = useState(test ? testNewFile : null);
   const [showFileSection, setShowFileSection] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File>(null);
-  const [functionality, setFunctionality] = useState("");
   const [content, setContent] = useState("");
 
   function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
@@ -118,6 +118,7 @@ const _App = () => {
           choices: [],
         });
       } else if (completedCode) {
+        setCode(completedCode);
         await window.api.createOrUpdateFile(res);
       }
 
@@ -146,8 +147,11 @@ const _App = () => {
       ? await handleGetFile(selectedFile.path)
       : "";
 
-    const newCode = contentToUpdate ? contentToUpdate : updatedContent;
+    let newCode = contentToUpdate ? contentToUpdate : updatedContent;
 
+    if (textIncludeScratchPad(projectDirectory) && code) {
+      newCode = code;
+    }
     const newHistory = [
       ...history,
       { role: ChatUserType.user, content: value },
@@ -231,8 +235,7 @@ const _App = () => {
               showFileSection={showFileSection}
               handleFileSelect={handleFileSelect}
               selectedFile={selectedFile}
-              functionality={functionality}
-              setFunctionality={setFunctionality}
+              code={code}
             />
           </div>
         </div>

@@ -45,3 +45,7 @@ export const parseReturnedCode = (
 
   return content;
 };
+
+export function textIncludeScratchPad(text: string) {
+  return text.toLowerCase().includes("scratch");
+}

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export enum ChatUserType {
   system = "system",
@@ -45,8 +45,7 @@ export interface ScratchPadContainerProps {
   showFileSection: boolean;
   handleFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
   selectedFile: File | null;
-  setFunctionality: (value: string) => void;
-  functionality: string;
+  code?: string;
 }
 
 function ScratchPadContainer({
@@ -58,10 +57,10 @@ function ScratchPadContainer({
   showFileSection,
   handleFileSelect,
   selectedFile,
-  setFunctionality,
-  functionality,
+  code,
 }: ScratchPadContainerProps) {
   const messagesEndRef = useRef(null);
+  const [dev, setDev] = useState(false);
 
   function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -88,34 +87,28 @@ function ScratchPadContainer({
           )}
         </div>
       )}
-      <ul className="space-y-2 h-full">
-        {projectDirectory && (
-          <p>
-            Project directory: {projectDirectory}{" "}
-            <ClearButton clearText={() => clearText("projectDirectory")} />{" "}
-          </p>
-        )}
+      {dev && (
+        <div>
+          <ul className="space-y-2 ">
+            {projectDirectory && <p>Project directory: {projectDirectory} </p>}
 
-        {newFile !== null && (
-          <p>
-            New file: {newFile !== null && (newFile ? "Yes" : "No")}{" "}
-            <ClearButton clearText={() => clearText("newFile")} />{" "}
-          </p>
-        )}
+            {newFile !== null && (
+              <p>New file: {newFile !== null && (newFile ? "Yes" : "No")} </p>
+            )}
 
-        {projectFile && (
-          <p>
-            Code file: {projectFile}{" "}
-            <ClearButton clearText={() => clearText("projectFile")} />{" "}
-          </p>
-        )}
-        {requiredFunctionality && (
-          <p>
-            Functionality: {requiredFunctionality}{" "}
-            <ClearButton clearText={() => clearText("requiredFunctionality")} />{" "}
-          </p>
-        )}
-      </ul>
+            {projectFile && <p>Code file: {projectFile} </p>}
+            {requiredFunctionality && (
+              <p>Functionality: {requiredFunctionality} </p>
+            )}
+          </ul>
+        </div>
+      )}
+      {code && (
+        <div className="my-4 flex items-center">
+          <div className="bg-slate-300 h-0.5 w-full"></div>
+        </div>
+      )}
+      <pre>{code}</pre>
     </div>
   );
 }
