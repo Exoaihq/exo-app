@@ -24,7 +24,7 @@ export async function createFileFromResponse(
 
   newFile
     ? createFile(projectFile, completedCode, projectDirectory)
-    : overwriteFile(projectDirectory + "/" + projectFile, completedCode);
+    : overwriteFile(projectDirectory, completedCode);
 }
 
 const createWindow = (): void => {

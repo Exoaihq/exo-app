@@ -3,16 +3,17 @@
 import { OpenAiResponseAndMetadata } from "./api/apiCalls";
 
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
-const { ipcRenderer, contextBridge } = require('electron');
+const { ipcRenderer, contextBridge } = require("electron");
 
-contextBridge.exposeInMainWorld('api', {
-    // Send Methods
-    testSend: (args: any) => ipcRenderer.send('test-send', args),
-    // Receive Methods
-    getBaseApiUrl: async () => await ipcRenderer.invoke('process'),
+contextBridge.exposeInMainWorld("api", {
+  // Send Methods
+  testSend: (args: any) => ipcRenderer.send("test-send", args),
+  // Receive Methods
+  getBaseApiUrl: async () => await ipcRenderer.invoke("process"),
 
-    createOrUpdateFile: (response: OpenAiResponseAndMetadata) => ipcRenderer.invoke('create-or-update-file', response),
+  createOrUpdateFile: (response: OpenAiResponseAndMetadata) =>
+    ipcRenderer.invoke("create-or-update-file", response),
 
-    getFile: (response: string) => ipcRenderer.invoke('get-file-contents', response),
-
+  getFile: (response: string) =>
+    ipcRenderer.invoke("get-file-contents", response),
 });

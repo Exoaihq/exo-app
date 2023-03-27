@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { CodeCompletionDetails, CodeDirectory } from "../api/apiCalls";
 
 export enum ChatUserType {
   system = "system",
@@ -37,15 +36,31 @@ function ClearButton({
   );
 }
 
-function ScratchPadContainer(props: {
+export interface ScratchPadContainerProps {
   requiredFunctionality: string;
   newFile: boolean | null;
   projectDirectory: string;
   projectFile: string;
   clearItem: (item: string) => void;
-}) {
-  const { requiredFunctionality, newFile, projectDirectory, projectFile } =
-    props;
+  showFileSection: boolean;
+  handleFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  selectedFile: File | null;
+  setFunctionality: (value: string) => void;
+  functionality: string;
+}
+
+function ScratchPadContainer({
+  requiredFunctionality,
+  newFile,
+  projectDirectory,
+  projectFile,
+  clearItem,
+  showFileSection,
+  handleFileSelect,
+  selectedFile,
+  setFunctionality,
+  functionality,
+}: ScratchPadContainerProps) {
   const messagesEndRef = useRef(null);
 
   function scrollToBottom() {
@@ -53,7 +68,7 @@ function ScratchPadContainer(props: {
   }
 
   const clearText = (item: string) => {
-    props.clearItem(item);
+    clearItem(item);
   };
 
   useEffect(() => {
@@ -61,7 +76,18 @@ function ScratchPadContainer(props: {
   }, [history]);
 
   return (
-    <div className="relative w-full p-6 overflow-y-auto h-[40rem]">
+    <div className="relative w-full p-6 h-[40rem]">
+      {showFileSection && (
+        <div>
+          {" "}
+          <input type="file" onChange={handleFileSelect} id="ctrl" />
+          {selectedFile && (
+            <div>
+              <p>You have selected the file: {selectedFile.name}</p>
+            </div>
+          )}
+        </div>
+      )}
       <ul className="space-y-2 h-full">
         {projectDirectory && (
           <p>

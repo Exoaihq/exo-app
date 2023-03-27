@@ -64,6 +64,7 @@ export interface CodeCompletionRequest {
   baseApiUrl: string;
   session: any;
   codeContent: string;
+  fullFilePathWithName: string;
 }
 
 export interface Choices {
@@ -108,6 +109,7 @@ export function codeCompletion(
     body: JSON.stringify({
       messages: req.messages,
       codeContent: req.codeContent,
+      fullFilePathWithName: req.fullFilePathWithName,
     }),
   };
 

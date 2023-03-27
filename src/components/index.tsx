@@ -15,7 +15,7 @@ declare global {
     api: {
       createOrUpdateFile: (response: OpenAiResponseAndMetadata) => Promise<any>;
       getBaseApiUrl: () => Promise<string>;
-      getFile: (path: string) => Promise<string>;
+      getFile: (path: string) => string;
     };
   }
 }
@@ -60,6 +60,15 @@ const _App = () => {
     test ? testRequiredFunctionality : ""
   );
   const [newFile, setNewFile] = useState(test ? testNewFile : null);
+  const [showFileSection, setShowFileSection] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File>(null);
+  const [functionality, setFunctionality] = useState("");
+  const [content, setContent] = useState("");
+
+  function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+  }
 
   async function handleLogin(email: string, password: string) {
     const res = await supabase.auth.signInWithPassword({
@@ -80,6 +89,8 @@ const _App = () => {
 
   const useCodeCompletion = useMutation(codeCompletion, {
     onSuccess: async (res) => {
+      setShowFileSection(true);
+
       const { choices, metadata, completedCode } = res;
       const { projectDirectory, projectFile, newFile, requiredFunctionality } =
         metadata;
@@ -95,7 +106,18 @@ const _App = () => {
       newFile !== null && setNewFile(newFile);
       requiredFunctionality && setRequiredFunctionality(requiredFunctionality);
 
-      if (completedCode) {
+      if (completedCode && selectedFile) {
+        await window.api.createOrUpdateFile({
+          completedCode,
+          metadata: {
+            projectDirectory: selectedFile.path,
+            newFile: false,
+            projectFile: "",
+            requiredFunctionality: "",
+          },
+          choices: [],
+        });
+      } else if (completedCode) {
         await window.api.createOrUpdateFile(res);
       }
 
@@ -113,32 +135,18 @@ const _App = () => {
     },
   });
 
-  const handleCodeChatMutation = async (value: string) => {
+  const handleCodeChatMutation = async (
+    value: string,
+    contentToUpdate?: string
+  ) => {
     setLoading(true);
 
-    let codeContent = "";
-    console.log("newFile", newFile);
-    if (newFile === false && projectFile) {
-      try {
-        const fullPath = projectDirectory + "/" + projectFile;
-        console.log("fullPath", fullPath);
-        codeContent = await window.api.getFile(
-          projectDirectory + "/" + projectFile
-        );
-        console.log("codeContent", codeContent);
-      } catch {
-        setHistory([
-          ...history,
-          {
-            role: ChatUserType.assistant,
-            content:
-              "I can't find that file. Can you confirm you have the correct directory and file name?",
-          },
-        ]);
-        setLoading(false);
-        return;
-      }
-    }
+    // The user may update the code in the file. This get the updated code
+    const updatedContent = content
+      ? await handleGetFile(selectedFile.path)
+      : "";
+
+    const newCode = contentToUpdate ? contentToUpdate : updatedContent;
 
     const newHistory = [
       ...history,
@@ -149,7 +157,8 @@ const _App = () => {
       messages: newHistory,
       baseApiUrl,
       session,
-      codeContent,
+      codeContent: newCode,
+      fullFilePathWithName: selectedFile ? selectedFile.path : "",
     });
   };
 
@@ -177,6 +186,10 @@ const _App = () => {
     setSession(returnedSession.data.session);
   }
 
+  async function handleGetFile(fullpath: string) {
+    return await window.api.getFile(fullpath);
+  }
+
   useEffect(() => {
     if (window) {
       window.api.getBaseApiUrl().then((res) => {
@@ -186,10 +199,22 @@ const _App = () => {
     }
   }, [window]);
 
+  useEffect(() => {
+    if (selectedFile) {
+      handleGetFile(selectedFile.path).then((content) => {
+        setContent(content);
+
+        if (content) {
+          handleCodeChatMutation("Here is a file I'd like to update", content);
+        }
+      });
+    }
+  }, [selectedFile]);
+
   return (
     <div>
       {session && (
-        <div className="min-w-full border rounded grid grid-cols-2 gap-4  divide-x">
+        <div className="min-w-full border rounded grid grid-cols-2 divide-x">
           <div>
             <ChatHeader handleLogout={handleLogout} />
             <ChatHistory history={history} loading={loading} />
@@ -203,6 +228,11 @@ const _App = () => {
               requiredFunctionality={requiredFunctionality}
               newFile={newFile}
               clearItem={clearItem}
+              showFileSection={showFileSection}
+              handleFileSelect={handleFileSelect}
+              selectedFile={selectedFile}
+              functionality={functionality}
+              setFunctionality={setFunctionality}
             />
           </div>
         </div>
