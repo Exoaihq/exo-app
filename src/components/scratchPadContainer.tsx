@@ -60,7 +60,7 @@ function ScratchPadContainer({
   code,
 }: ScratchPadContainerProps) {
   const messagesEndRef = useRef(null);
-  const [dev, setDev] = useState(false);
+  const [dev, setDev] = useState(true);
 
   function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -75,7 +75,7 @@ function ScratchPadContainer({
   }, [history]);
 
   return (
-    <div className="relative w-full p-6 h-[40rem]">
+    <div className="relative w-full p-6 h-[40rem] overflow-auto">
       {showFileSection && (
         <div>
           {" "}

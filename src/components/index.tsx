@@ -1,8 +1,18 @@
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
-import { QueryClient, QueryClientProvider, useMutation } from "react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useMutation,
+  useQuery,
+} from "react-query";
 import { textIncludeScratchPad } from "../utils/parsingReturnedCode";
-import { codeCompletion, OpenAiResponseAndMetadata } from "../api/apiCalls";
+import {
+  codeCompletion,
+  createMessage,
+  getMessages,
+  OpenAiResponseAndMetadata,
+} from "../api/apiCalls";
 import { getFunnyErrorMessage } from "../utils/awayMessages";
 import ChatHeader from "./chatHeader";
 import ChatHistory, { ChatUserType } from "./chatHistory";
@@ -10,6 +20,7 @@ import ChatInput from "./chatInput";
 import LoginForm from "./Login";
 import ScratchPadContainer from "./scratchPadContainer";
 import ScratchPadHeader from "./scratchPadHeader";
+import { v4 as uuidv4 } from "uuid";
 
 declare global {
   interface Window {
@@ -48,7 +59,15 @@ const _App = () => {
     "https://code-gen-server.herokuapp.com"
   );
 
+  const [sessionId, setSessionId] = useState(uuidv4());
   const [session, setSession] = useState(null);
+
+  const messagesApi = useQuery({
+    queryKey: "messages",
+    queryFn: () => getMessages({ session, baseApiUrl }),
+    enabled: !!session,
+  });
+
   const [loginErrorMessage, setLoginErrorMessage] = useState(null);
   const [history, setHistory] = useState(startingHistory);
   const [code, setCode] = useState("");
@@ -86,6 +105,12 @@ const _App = () => {
     await supabase.auth.signOut();
     setSession(null);
   }
+
+  const useCreateMessage = useMutation(createMessage, {
+    onSuccess: async (res) => {
+      console.log(res);
+    },
+  });
 
   const useCodeCompletion = useMutation(codeCompletion, {
     onSuccess: async (res) => {
@@ -180,6 +205,16 @@ const _App = () => {
 
   async function handleSubmit(value: string) {
     await setHistory([...history, { role: ChatUserType.user, content: value }]);
+
+    useCreateMessage.mutate({
+      message: {
+        role: ChatUserType.user,
+        content: value,
+      },
+      baseApiUrl,
+      session,
+      sessionId,
+    });
 
     handleCodeChatMutation(value);
   }
