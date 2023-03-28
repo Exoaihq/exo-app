@@ -28,6 +28,7 @@ declare global {
       createOrUpdateFile: (response: OpenAiResponseAndMetadata) => Promise<any>;
       getBaseApiUrl: () => Promise<string>;
       getFile: (path: string) => string;
+      getDirectories: (path: string) => string[];
     };
   }
 }
@@ -188,6 +189,7 @@ const _App = () => {
       session,
       codeContent: newCode,
       fullFilePathWithName: selectedFile ? selectedFile.path : "",
+      sessionId,
     });
   };
 

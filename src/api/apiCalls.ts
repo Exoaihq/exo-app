@@ -77,6 +77,7 @@ export interface CodeCompletionRequest {
   session: any;
   codeContent: string;
   fullFilePathWithName: string;
+  sessionId: string;
 }
 
 export interface Choices {
@@ -122,6 +123,7 @@ export function codeCompletion(
       messages: req.messages,
       codeContent: req.codeContent,
       fullFilePathWithName: req.fullFilePathWithName,
+      sessionId: req.sessionId,
     }),
   };
 
