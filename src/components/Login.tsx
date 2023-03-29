@@ -1,17 +1,11 @@
 // tsx
 import React, { useState } from "react";
+import { useSessionContext } from "../context/sessionContext";
 
-interface LoginFormProps {
-  handleLogin: (email: string, password: string) => void;
-  loginErrorMessage?: string;
-}
-
-const LoginForm: React.FC<LoginFormProps> = ({
-  handleLogin,
-  loginErrorMessage,
-}) => {
+const LoginForm = () => {
   const [email, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { handleLogin, loginErrorMessage } = useSessionContext();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();

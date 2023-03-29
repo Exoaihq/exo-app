@@ -1,15 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-
-export enum ChatUserType {
-  system = "system",
-  user = "user",
-  assistant = "assistant",
-}
-
-export interface ChatMessage {
-  role: ChatUserType;
-  content: string;
-}
+import { ChatMessage, ChatUserType } from "../api";
 
 function ChatHistory({
   history,

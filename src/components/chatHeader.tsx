@@ -1,4 +1,7 @@
-function ChatHeader({ handleLogout }: any) {
+import { useSessionContext } from "../context/sessionContext";
+
+function ChatHeader() {
+  const { handleLogout } = useSessionContext();
   return (
     <div className="border-gray-300 pb-3 border-b">
       <div className="relative flex items-center p-3 ">

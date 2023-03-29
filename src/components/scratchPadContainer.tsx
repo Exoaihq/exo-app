@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { Key, useEffect, useRef, useState } from "react";
+import { useDirectoryContext } from "../context/directoryContext";
 
 export enum ChatUserType {
   system = "system",
@@ -43,6 +44,8 @@ function ScratchPadContainer({
 }: ScratchPadContainerProps) {
   const messagesEndRef = useRef(null);
   const [dev, setDev] = useState(false);
+
+  const { directories } = useDirectoryContext();
 
   function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -107,6 +110,23 @@ function ScratchPadContainer({
         </div>
       )}
       {code && <pre className="bg-slate-100 p-4">{code}</pre>}
+      {
+        <div className="flex justify-end">
+          <ul>
+            {directories &&
+              directories.map(
+                (
+                  item: {
+                    file_path: string;
+                  },
+                  index: Key
+                ) => {
+                  return <li key={index}>{item.file_path}</li>;
+                }
+              )}
+          </ul>
+        </div>
+      }
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import {
   QueryClient,
@@ -9,19 +8,21 @@ import {
 import { textIncludeScratchPad } from "../utils/parsingReturnedCode";
 import {
   codeCompletion,
-  createMessage,
-  fileUpload,
-  getMessages,
   OpenAiResponseAndMetadata,
-} from "../api/apiCalls";
+} from "../api/codeCompletion";
 import { getFunnyErrorMessage } from "../utils/awayMessages";
 import ChatHeader from "./chatHeader";
-import ChatHistory, { ChatUserType } from "./chatHistory";
+import ChatHistory from "./chatHistory";
 import ChatInput from "./chatInput";
 import LoginForm from "./Login";
 import ScratchPadContainer from "./scratchPadContainer";
 import ScratchPadHeader from "./scratchPadHeader";
-import { v4 as uuidv4 } from "uuid";
+import { fileUpload, createMessage, getMessages, ChatUserType } from "../api";
+import { DirectoryContextWrapper } from "../context/directoryContext";
+import {
+  SessionContextWrapper,
+  useSessionContext,
+} from "../context/sessionContext";
 
 declare global {
   interface Window {
@@ -35,11 +36,6 @@ declare global {
 }
 
 const queryClient = new QueryClient();
-
-const supabase = createClient(
-  "https://xexjtohvdexqxpomspdb.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhleGp0b2h2ZGV4cXhwb21zcGRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzgzMDg0MjYsImV4cCI6MTk5Mzg4NDQyNn0.-3oqirs2PwoAS42jmB47QE-A1GSyUBxsdLsNz_8dDgk"
-);
 
 const startingHistory = [
   {
@@ -57,12 +53,7 @@ const testRequiredFunctionality =
 const test = false;
 
 const _App = () => {
-  const [baseApiUrl, setBaseApiUrl] = useState(
-    "https://code-gen-server.herokuapp.com"
-  );
-
-  const [sessionId, setSessionId] = useState(uuidv4());
-  const [session, setSession] = useState(null);
+  const { session, baseApiUrl, sessionId } = useSessionContext();
 
   const messagesApi = useQuery({
     queryKey: "messages",
@@ -70,7 +61,6 @@ const _App = () => {
     enabled: !!session,
   });
 
-  const [loginErrorMessage, setLoginErrorMessage] = useState(null);
   const [history, setHistory] = useState(startingHistory);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -89,23 +79,6 @@ const _App = () => {
   function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files[0];
     setSelectedFile(file);
-  }
-
-  async function handleLogin(email: string, password: string) {
-    const res = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (res.error) {
-      setLoginErrorMessage(res.error.message);
-    } else {
-      setSession(res.data.session);
-    }
-  }
-
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    setSession(null);
   }
 
   const useCreateMessage = useMutation(createMessage, {
@@ -165,8 +138,6 @@ const _App = () => {
 
   const useFileUploadMutation = useMutation(fileUpload, {
     onSuccess: async (res) => {
-      setShowFileSection(false);
-
       const { choices, metadata } = res;
       const { projectDirectory, projectFile, newFile, requiredFunctionality } =
         metadata;
@@ -273,24 +244,9 @@ const _App = () => {
     handleCodeChatMutation(value);
   }
 
-  async function getSession() {
-    const returnedSession = await supabase.auth.getSession();
-
-    setSession(returnedSession.data.session);
-  }
-
   async function handleGetFile(fullpath: string) {
     return await window.api.getFile(fullpath);
   }
-
-  useEffect(() => {
-    if (window) {
-      window.api.getBaseApiUrl().then((res) => {
-        setBaseApiUrl(res);
-      });
-      getSession();
-    }
-  }, [window]);
 
   useEffect(() => {
     if (selectedFile) {
@@ -309,7 +265,7 @@ const _App = () => {
       {session && (
         <div className="min-w-full border rounded grid grid-cols-2 divide-x">
           <div>
-            <ChatHeader handleLogout={handleLogout} />
+            <ChatHeader />
             <ChatHistory history={history} loading={loading} />
             <ChatInput handleSubmit={handleSubmit} />
           </div>
@@ -331,11 +287,8 @@ const _App = () => {
       )}
       {!session && (
         <div className="flex flex-col h-screen">
-          <ChatHeader handleLogout={null} />
-          <LoginForm
-            handleLogin={handleLogin}
-            loginErrorMessage={loginErrorMessage}
-          />
+          <ChatHeader />
+          <LoginForm />
         </div>
       )}
     </div>
@@ -345,7 +298,11 @@ const _App = () => {
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <_App />
+      <SessionContextWrapper>
+        <DirectoryContextWrapper>
+          <_App />
+        </DirectoryContextWrapper>
+      </SessionContextWrapper>
     </QueryClientProvider>
   );
 };

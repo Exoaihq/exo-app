@@ -1,5 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron";
-import { OpenAiResponseAndMetadata } from "./api/apiCalls";
+import { OpenAiResponseAndMetadata } from "./api/codeCompletion";
 
 import todesktop from "@todesktop/runtime";
 import {

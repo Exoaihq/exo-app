@@ -1,6 +1,6 @@
 // See the Electron documentation for details on how to use preload scripts:
 
-import { OpenAiResponseAndMetadata } from "./api/apiCalls";
+import { OpenAiResponseAndMetadata } from "./api";
 
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 const { ipcRenderer, contextBridge } = require("electron");
