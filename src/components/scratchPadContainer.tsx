@@ -11,29 +11,11 @@ export interface ChatMessage {
   content: string;
 }
 
-function ClearButton({
-  clearText,
-}: {
-  clearText: React.MouseEventHandler<HTMLButtonElement>;
-}) {
-  return (
-    <button
-      onClick={clearText}
-      style={{
-        position: "relative",
-        top: -5,
-        right: -5,
-        background: "none",
-        border: "none",
-        cursor: "pointer",
-        fontSize: "1rem",
-        color: "red",
-        lineHeight: 1,
-      }}
-    >
-      &times;
-    </button>
-  );
+declare global {
+  interface Window {
+    showDirectoryPicker: (options: any) => Promise<any>;
+    showSaveFilePicker: () => Promise<any>;
+  }
 }
 
 export interface ScratchPadContainerProps {
@@ -60,7 +42,7 @@ function ScratchPadContainer({
   code,
 }: ScratchPadContainerProps) {
   const messagesEndRef = useRef(null);
-  const [dev, setDev] = useState(true);
+  const [dev, setDev] = useState(false);
 
   function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -70,12 +52,28 @@ function ScratchPadContainer({
     clearItem(item);
   };
 
+  // async function getDir() {
+  //   const dirHandle = await window.showDirectoryPicker({
+  //     startsIn: "documents",
+  //   });
+
+  //   const firstFile = await dirHandle.values().next();
+  //   const entries = await dirHandle.entries().next();
+
+  //   const directory = await window.api.getDirectories(dirHandle.name);
+  //   console.log(directory);
+
+  //   console.log(dirHandle.name, firstFile, entries);
+  //   // run code for dirHandle
+  // }
+
   useEffect(() => {
     scrollToBottom();
   }, [history]);
 
   return (
     <div className="relative w-full p-6 h-[40rem] overflow-auto">
+      {/* <button onClick={getDir}>Click</button> */}
       {showFileSection && (
         <div>
           {" "}
@@ -104,11 +102,11 @@ function ScratchPadContainer({
         </div>
       )}
       {code && (
-        <div className="my-4 flex items-center">
+        <div className=" flex items-center">
           <div className="bg-slate-300 h-0.5 w-full"></div>
         </div>
       )}
-      <pre>{code}</pre>
+      {code && <pre className="bg-slate-100 p-4">{code}</pre>}
     </div>
   );
 }

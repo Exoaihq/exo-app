@@ -2,7 +2,12 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import { OpenAiResponseAndMetadata } from "./api/apiCalls";
 
 import todesktop from "@todesktop/runtime";
-import { createFile, getFileContent, overwriteFile } from "./utils/fileSystem";
+import {
+  createFile,
+  getFileContent,
+  getRootParentDirectory,
+  overwriteFile,
+} from "./utils/fileSystem";
 todesktop.init();
 const path = require("path");
 
@@ -49,6 +54,15 @@ const createWindow = (): void => {
 
   ipcMain.handle("get-file-contents", (event, response) => {
     return getFileContent(response);
+  });
+
+  const parentDirectory = getRootParentDirectory(process.cwd());
+  console.log(parentDirectory);
+
+  ipcMain.handle("get-directories", (event, response) => {
+    // const res = foundDirectory(parentDirectory, response);
+    // console.log("main", res);
+    return response;
   });
 
   ipcMain.handle("process", (event, response) => {

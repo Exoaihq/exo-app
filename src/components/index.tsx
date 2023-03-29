@@ -10,6 +10,7 @@ import { textIncludeScratchPad } from "../utils/parsingReturnedCode";
 import {
   codeCompletion,
   createMessage,
+  fileUpload,
   getMessages,
   OpenAiResponseAndMetadata,
 } from "../api/apiCalls";
@@ -65,7 +66,7 @@ const _App = () => {
 
   const messagesApi = useQuery({
     queryKey: "messages",
-    queryFn: () => getMessages({ session, baseApiUrl }),
+    queryFn: () => getMessages({ session, baseApiUrl, sessionId }),
     enabled: !!session,
   });
 
@@ -162,6 +163,39 @@ const _App = () => {
     },
   });
 
+  const useFileUploadMutation = useMutation(fileUpload, {
+    onSuccess: async (res) => {
+      setShowFileSection(false);
+
+      const { choices, metadata } = res;
+      const { projectDirectory, projectFile, newFile, requiredFunctionality } =
+        metadata;
+      const messages = choices.map((choice) => {
+        return {
+          role: choice.message.role,
+          content: choice.message.content,
+        };
+      });
+
+      projectDirectory && setProjectDirectory(projectDirectory);
+      projectFile && setProjectFile(projectFile);
+      newFile !== null && setNewFile(newFile);
+      requiredFunctionality && setRequiredFunctionality(requiredFunctionality);
+
+      setHistory([...history, ...messages]);
+    },
+    onError(error: Error) {
+      console.log(error);
+      setHistory([
+        ...history,
+        { role: ChatUserType.assistant, content: getFunnyErrorMessage() },
+      ]);
+    },
+    onSettled: () => {
+      setLoading(false);
+    },
+  });
+
   const handleCodeChatMutation = async (
     value: string,
     contentToUpdate?: string
@@ -188,6 +222,24 @@ const _App = () => {
       baseApiUrl,
       session,
       codeContent: newCode,
+      fullFilePathWithName: selectedFile ? selectedFile.path : "",
+      sessionId,
+    });
+  };
+
+  const handleFileUpload = async (value: string, contentToUpdate: string) => {
+    setLoading(true);
+
+    const newHistory = [
+      ...history,
+      { role: ChatUserType.user, content: value },
+    ];
+
+    useFileUploadMutation.mutate({
+      messages: newHistory,
+      baseApiUrl,
+      session,
+      codeContent: contentToUpdate,
       fullFilePathWithName: selectedFile ? selectedFile.path : "",
       sessionId,
     });
@@ -246,7 +298,7 @@ const _App = () => {
         setContent(content);
 
         if (content) {
-          handleCodeChatMutation("Here is a file I'd like to update", content);
+          handleFileUpload("Here is a file I'd like to update", content);
         }
       });
     }

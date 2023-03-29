@@ -62,6 +62,7 @@ export interface CodeDirectory {
 export interface GetMessagesRequest {
   baseApiUrl: string;
   session: any;
+  sessionId: string;
 }
 
 export interface CreateMessagesRequest {
@@ -150,6 +151,7 @@ export function getMessages(req: GetMessagesRequest): Promise<any> {
       "Content-Type": "application/json",
       access_token: req.session?.access_token,
       refresh_token: req.session?.refresh_token,
+      session_id: req.session?.sessionId,
     },
     url: req.baseApiUrl + "/messages",
   };
@@ -190,6 +192,41 @@ export function createMessage(req: CreateMessagesRequest): Promise<any> {
       return res.json();
     })
     .then((res: any) => {
+      const { data } = res;
+      return data;
+    })
+    .catch((err) => {
+      throw new Error(err);
+    });
+}
+
+export function fileUpload(
+  req: CodeCompletionRequest
+): Promise<OpenAiResponseAndMetadata> {
+  const request = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      access_token: req.session?.access_token,
+      refresh_token: req.session?.refresh_token,
+    },
+    url: req.baseApiUrl + "/code/file",
+    body: JSON.stringify({
+      messages: req.messages,
+      codeContent: req.codeContent,
+      fullFilePathWithName: req.fullFilePathWithName,
+      sessionId: req.sessionId,
+    }),
+  };
+
+  return fetch(request.url, request)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      }
+      return res.json();
+    })
+    .then((res: CodeCompletionResponse) => {
       const { data } = res;
       return data;
     })
