@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -11,11 +11,15 @@ import {
   OpenAiResponseAndMetadata,
 } from "../api/codeCompletion";
 import { DirectoryContextWrapper } from "../context/directoryContext";
-import { ScratchPadContextWrapper } from "../context/scratchPadContext";
+import {
+  ScratchPadContextWrapper,
+  useScratchPadContext,
+} from "../context/scratchPadContext";
 import {
   SessionContextWrapper,
   useSessionContext,
 } from "../context/sessionContext";
+import { useWindowWidth } from "../hooks/screenSize";
 import { getFunnyErrorMessage } from "../utils/awayMessages";
 import { textIncludeScratchPad } from "../utils/parsingReturnedCode";
 import ChatHeader from "./chat/chatHeader";
@@ -55,6 +59,11 @@ const test = false;
 
 const _App = () => {
   const { session, baseApiUrl, sessionId } = useSessionContext();
+
+  const { activeTab, setActiveTab } = useScratchPadContext();
+
+  const breakPoint = 768;
+  const screenWidth = useWindowWidth();
 
   const messagesApi = useQuery({
     queryKey: "messages",
@@ -249,14 +258,48 @@ const _App = () => {
     }
   }, [selectedFile]);
 
+  useEffect(() => {
+    if (screenWidth < breakPoint) {
+      setActiveTab("Chat");
+    }
+
+    if (screenWidth > breakPoint) {
+      setActiveTab("Scratch Pad");
+    }
+  }, [screenWidth]);
+
   return (
     <div>
       {session && (
         <div className="min-w-full border rounded grid md:grid-cols-3 grid-cols-2 divide-x">
           <div className="col-span-2">
             <ChatHeader />
-            <ChatHistory history={history} loading={loading} />
-            <ChatInput handleSubmit={handleSubmit} />
+            {screenWidth > breakPoint ? (
+              <Fragment>
+                <ChatHistory history={history} loading={loading} />
+                <ChatInput handleSubmit={handleSubmit} />
+              </Fragment>
+            ) : (
+              <div>
+                {activeTab === "Chat" ? (
+                  <Fragment>
+                    <ChatHistory history={history} loading={loading} />
+                    <ChatInput handleSubmit={handleSubmit} />{" "}
+                  </Fragment>
+                ) : (
+                  <ScratchPadContainer
+                    projectDirectory={projectDirectory}
+                    projectFile={projectFile}
+                    requiredFunctionality={requiredFunctionality}
+                    newFile={newFile}
+                    showFileSection={showFileSection}
+                    handleFileSelect={handleFileSelect}
+                    selectedFile={selectedFile}
+                    code={code}
+                  />
+                )}
+              </div>
+            )}
           </div>
           <div className="hidden md:block">
             <ScratchPadHeader />

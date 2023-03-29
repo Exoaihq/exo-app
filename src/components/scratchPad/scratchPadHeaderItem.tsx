@@ -20,7 +20,7 @@ function ScratchPadHeaderItem({
     <li className="mr-2" onClick={() => setActiveTab(name)}>
       <a href="#" className={itemClass} aria-current="page">
         {icon}
-        <div className="max-sm:hidden">{name}</div>
+        <div className="hidden lg:block">{name}</div>
       </a>
     </li>
   );
