@@ -6,10 +6,6 @@ import { useSessionContext } from "./sessionContext";
 export const DirectoryContextWrapper = (props: any) => {
   const { session, baseApiUrl, sessionId } = useSessionContext();
 
-  console.log("session id ", sessionId);
-  console.log("session ", session);
-  console.log("baseApiUrl ", baseApiUrl);
-
   const { data } = useQuery({
     queryKey: "directory",
     queryFn: () => getDirectories({ session, baseApiUrl, sessionId }),

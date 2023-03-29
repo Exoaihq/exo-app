@@ -5,24 +5,25 @@ import {
   useMutation,
   useQuery,
 } from "react-query";
-import { textIncludeScratchPad } from "../utils/parsingReturnedCode";
+import { ChatUserType, createMessage, fileUpload, getMessages } from "../api";
 import {
   codeCompletion,
   OpenAiResponseAndMetadata,
 } from "../api/codeCompletion";
-import { getFunnyErrorMessage } from "../utils/awayMessages";
-import ChatHeader from "./chatHeader";
-import ChatHistory from "./chatHistory";
-import ChatInput from "./chatInput";
-import LoginForm from "./Login";
-import ScratchPadContainer from "./scratchPadContainer";
-import ScratchPadHeader from "./scratchPadHeader";
-import { fileUpload, createMessage, getMessages, ChatUserType } from "../api";
 import { DirectoryContextWrapper } from "../context/directoryContext";
+import { ScratchPadContextWrapper } from "../context/scratchPadContext";
 import {
   SessionContextWrapper,
   useSessionContext,
 } from "../context/sessionContext";
+import { getFunnyErrorMessage } from "../utils/awayMessages";
+import { textIncludeScratchPad } from "../utils/parsingReturnedCode";
+import ChatHeader from "./chat/chatHeader";
+import ChatHistory from "./chat/chatHistory";
+import ChatInput from "./chat/chatInput";
+import LoginForm from "./Login";
+import ScratchPadContainer from "./scratchPad/scratchPadContainer";
+import ScratchPadHeader from "./scratchPad/scratchPadHeader";
 
 declare global {
   interface Window {
@@ -216,18 +217,6 @@ const _App = () => {
     });
   };
 
-  function clearItem(item: string) {
-    if (item === "projectDirectory") {
-      setProjectDirectory("");
-    } else if (item === "newFile") {
-      setNewFile(null);
-    } else if (item === "projectFile") {
-      setProjectFile("");
-    } else if (item === "requiredFunctionality") {
-      setRequiredFunctionality("");
-    }
-  }
-
   async function handleSubmit(value: string) {
     await setHistory([...history, { role: ChatUserType.user, content: value }]);
 
@@ -263,20 +252,19 @@ const _App = () => {
   return (
     <div>
       {session && (
-        <div className="min-w-full border rounded grid grid-cols-2 divide-x">
-          <div>
+        <div className="min-w-full border rounded grid md:grid-cols-3 grid-cols-2 divide-x">
+          <div className="col-span-2">
             <ChatHeader />
             <ChatHistory history={history} loading={loading} />
             <ChatInput handleSubmit={handleSubmit} />
           </div>
-          <div>
+          <div className="hidden md:block">
             <ScratchPadHeader />
             <ScratchPadContainer
               projectDirectory={projectDirectory}
               projectFile={projectFile}
               requiredFunctionality={requiredFunctionality}
               newFile={newFile}
-              clearItem={clearItem}
               showFileSection={showFileSection}
               handleFileSelect={handleFileSelect}
               selectedFile={selectedFile}
@@ -300,7 +288,9 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <SessionContextWrapper>
         <DirectoryContextWrapper>
-          <_App />
+          <ScratchPadContextWrapper>
+            <_App />
+          </ScratchPadContextWrapper>
         </DirectoryContextWrapper>
       </SessionContextWrapper>
     </QueryClientProvider>

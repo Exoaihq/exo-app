@@ -1,5 +1,5 @@
 import { Key, useEffect, useRef, useState } from "react";
-import { useDirectoryContext } from "../context/directoryContext";
+import { useDirectoryContext } from "../../context/directoryContext";
 
 export enum ChatUserType {
   system = "system",
@@ -24,7 +24,6 @@ export interface ScratchPadContainerProps {
   newFile: boolean | null;
   projectDirectory: string;
   projectFile: string;
-  clearItem: (item: string) => void;
   showFileSection: boolean;
   handleFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
   selectedFile: File | null;
@@ -36,7 +35,6 @@ function ScratchPadContainer({
   newFile,
   projectDirectory,
   projectFile,
-  clearItem,
   showFileSection,
   handleFileSelect,
   selectedFile,
@@ -50,10 +48,6 @@ function ScratchPadContainer({
   function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }
-
-  const clearText = (item: string) => {
-    clearItem(item);
-  };
 
   // async function getDir() {
   //   const dirHandle = await window.showDirectoryPicker({

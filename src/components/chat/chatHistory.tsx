@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ChatMessage, ChatUserType } from "../api";
+import { ChatMessage, ChatUserType } from "../../api";
 
 function ChatHistory({
   history,

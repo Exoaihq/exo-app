@@ -39,7 +39,6 @@ export function getDirectories(
     })
     .then((res: GetDirectoriesResponse) => {
       const { data } = res;
-      console.log(data);
       return data;
     })
     .catch((err) => {
