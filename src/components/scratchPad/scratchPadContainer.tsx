@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useDirectoryContext } from "../../context/directoryContext";
 import { useScratchPadContext } from "../../context/scratchPadContext";
 import DirectoryTab from "./directoryTab";
 
@@ -15,16 +16,12 @@ export interface ChatMessage {
 
 declare global {
   interface Window {
-    showDirectoryPicker: (options: any) => Promise<any>;
+    showDirectoryPicker: () => Promise<any>;
     showSaveFilePicker: () => Promise<any>;
   }
 }
 
 export interface ScratchPadContainerProps {
-  requiredFunctionality: string;
-  newFile: boolean | null;
-  projectDirectory: string;
-  projectFile: string;
   showFileSection: boolean;
   handleFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
   selectedFile: File | null;
@@ -32,38 +29,19 @@ export interface ScratchPadContainerProps {
 }
 
 function ScratchPadContainer({
-  requiredFunctionality,
-  newFile,
-  projectDirectory,
-  projectFile,
   showFileSection,
   handleFileSelect,
   selectedFile,
   code,
 }: ScratchPadContainerProps) {
   const messagesEndRef = useRef(null);
-  const [dev, setDev] = useState(false);
 
   const { activeTab } = useScratchPadContext();
+  const { newFile, setRepo } = useDirectoryContext();
 
   function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }
-
-  // async function getDir() {
-  //   const dirHandle = await window.showDirectoryPicker({
-  //     startsIn: "documents",
-  //   });
-
-  //   const firstFile = await dirHandle.values().next();
-  //   const entries = await dirHandle.entries().next();
-
-  //   const directory = await window.api.getDirectories(dirHandle.name);
-  //   console.log(directory);
-
-  //   console.log(dirHandle.name, firstFile, entries);
-  //   // run code for dirHandle
-  // }
 
   useEffect(() => {
     scrollToBottom();
@@ -71,32 +49,15 @@ function ScratchPadContainer({
 
   return (
     <div className="relative w-full p-6 h-[40rem] overflow-auto">
-      {/* <button onClick={getDir}>Click</button> */}
-      {showFileSection && (
+      {showFileSection && !newFile && (
         <div>
           {" "}
-          <input type="file" onChange={handleFileSelect} id="ctrl" />
+          <input type="file" onChange={handleFileSelect} />
           {selectedFile && (
             <div>
               <p>You have selected the file: {selectedFile.name}</p>
             </div>
           )}
-        </div>
-      )}
-      {dev && (
-        <div>
-          <ul className="space-y-2 ">
-            {projectDirectory && <p>Project directory: {projectDirectory} </p>}
-
-            {newFile !== null && (
-              <p>New file: {newFile !== null && (newFile ? "Yes" : "No")} </p>
-            )}
-
-            {projectFile && <p>Code file: {projectFile} </p>}
-            {requiredFunctionality && (
-              <p>Functionality: {requiredFunctionality} </p>
-            )}
-          </ul>
         </div>
       )}
       {code && (

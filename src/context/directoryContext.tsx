@@ -10,12 +10,12 @@ export const DirectoryContextWrapper = (props: any) => {
   const { session, baseApiUrl, sessionId } = useSessionContext();
   const [toastOpen, setToast] = useState(false);
   const [directoryToIndex, setDirectoryToIndex] = useState(null);
+  const [newFile, setNewFile] = useState(false);
+  const [repo, setRepo] = useState("");
 
   function toggleToast() {
     setToast(!toastOpen);
   }
-
-  const [repo, setRepo] = useState("");
 
   const useCreateRepoMutation = useMutation(createDirectory, {
     onSuccess: async (res) => {
@@ -55,11 +55,11 @@ export const DirectoryContextWrapper = (props: any) => {
     enabled: !!session,
   });
 
-  useEffect(() => {
-    if (!repo && data && data.length > 0) {
-      setRepo(data[0].file_path);
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (!repo && data && data.length > 0) {
+  //     setRepo(data[0].file_path);
+  //   }
+  // }, [data]);
 
   const value = {
     directories: data,
@@ -72,6 +72,8 @@ export const DirectoryContextWrapper = (props: any) => {
     handleIndexRepo,
     directoryToIndex,
     submitIndexRepo,
+    newFile,
+    setNewFile,
   };
   return (
     <DirectoryContext.Provider value={value}>
@@ -90,6 +92,8 @@ export const DirectoryContext = createContext({
   handleIndexRepo: (directory: any) => {},
   directoryToIndex: null,
   submitIndexRepo: () => {},
+  newFile: false,
+  setNewFile: (newFile: boolean) => {},
 });
 
 export const useDirectoryContext = () => useContext(DirectoryContext);

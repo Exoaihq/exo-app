@@ -10,7 +10,10 @@ import {
   codeCompletion,
   OpenAiResponseAndMetadata,
 } from "../api/codeCompletion";
-import { DirectoryContextWrapper } from "../context/directoryContext";
+import {
+  DirectoryContextWrapper,
+  useDirectoryContext,
+} from "../context/directoryContext";
 import {
   ScratchPadContextWrapper,
   useScratchPadContext,
@@ -49,9 +52,8 @@ const startingHistory = [
   },
 ];
 
-const testFile = "newFile.ts";
 const testDirectory = "/Users/kg/Repos/exo-client/src/components";
-const testNewFile = true;
+
 const testRequiredFunctionality =
   "Write a typescript function that takes a string returns and new string with // in front of each of the folling words: html, tsx, jsx, ts, js, typescript, javascript. So it would like like this: //html //tsx //jsx //ts //j";
 
@@ -61,6 +63,8 @@ const _App = () => {
   const { session, baseApiUrl, sessionId } = useSessionContext();
 
   const { activeTab, setActiveTab } = useScratchPadContext();
+
+  const { setNewFile } = useDirectoryContext();
 
   const breakPoint = 768;
   const screenWidth = useWindowWidth();
@@ -77,11 +81,10 @@ const _App = () => {
   const [projectDirectory, setProjectDirectory] = useState(
     test ? testDirectory : ""
   );
-  const [projectFile, setProjectFile] = useState(test ? testFile : "");
+
   const [requiredFunctionality, setRequiredFunctionality] = useState(
     test ? testRequiredFunctionality : ""
   );
-  const [newFile, setNewFile] = useState(test ? testNewFile : null);
   const [showFileSection, setShowFileSection] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File>(null);
   const [content, setContent] = useState("");
@@ -102,8 +105,7 @@ const _App = () => {
       setShowFileSection(true);
 
       const { choices, metadata, completedCode } = res;
-      const { projectDirectory, projectFile, newFile, requiredFunctionality } =
-        metadata;
+      const { projectDirectory, newFile, requiredFunctionality } = metadata;
       const messages = choices.map((choice) => {
         return {
           role: choice.message.role,
@@ -111,8 +113,11 @@ const _App = () => {
         };
       });
 
+      if (newFile) {
+        setActiveTab("Repositories");
+      }
+
       projectDirectory && setProjectDirectory(projectDirectory);
-      projectFile && setProjectFile(projectFile);
       newFile !== null && setNewFile(newFile);
       requiredFunctionality && setRequiredFunctionality(requiredFunctionality);
 
@@ -149,8 +154,7 @@ const _App = () => {
   const useFileUploadMutation = useMutation(fileUpload, {
     onSuccess: async (res) => {
       const { choices, metadata } = res;
-      const { projectDirectory, projectFile, newFile, requiredFunctionality } =
-        metadata;
+      const { projectDirectory, newFile, requiredFunctionality } = metadata;
       const messages = choices.map((choice) => {
         return {
           role: choice.message.role,
@@ -159,7 +163,6 @@ const _App = () => {
       });
 
       projectDirectory && setProjectDirectory(projectDirectory);
-      projectFile && setProjectFile(projectFile);
       newFile !== null && setNewFile(newFile);
       requiredFunctionality && setRequiredFunctionality(requiredFunctionality);
 
@@ -288,10 +291,6 @@ const _App = () => {
                   </Fragment>
                 ) : (
                   <ScratchPadContainer
-                    projectDirectory={projectDirectory}
-                    projectFile={projectFile}
-                    requiredFunctionality={requiredFunctionality}
-                    newFile={newFile}
                     showFileSection={showFileSection}
                     handleFileSelect={handleFileSelect}
                     selectedFile={selectedFile}
@@ -304,10 +303,6 @@ const _App = () => {
           <div className="hidden md:block">
             <ScratchPadHeader />
             <ScratchPadContainer
-              projectDirectory={projectDirectory}
-              projectFile={projectFile}
-              requiredFunctionality={requiredFunctionality}
-              newFile={newFile}
               showFileSection={showFileSection}
               handleFileSelect={handleFileSelect}
               selectedFile={selectedFile}

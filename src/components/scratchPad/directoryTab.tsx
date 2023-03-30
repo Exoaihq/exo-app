@@ -19,9 +19,36 @@ function DirectoryTab() {
     submitIndexRepo,
   } = useDirectoryContext();
 
+  async function getDir() {
+    const dirHandle = await window.showDirectoryPicker();
+    setRepo("/" + dirHandle.name);
+  }
+
   return (
     <div>
-      <h3>Saved Repos</h3>
+      <button
+        className="p-3 mt-4 rounded-lg bg-blue-500 text-gray-200 inline-flex items-center gap-2 justify-center hover:text-gray-600 hover:bg-blue-300 "
+        onClick={getDir}
+      >
+        Select Directory
+      </button>
+      <input
+        className="w-full p-2 bg-white border-2 border-slate-200 rounded-lg mt-10"
+        type="text"
+        id="username"
+        value={repo}
+        onChange={(event) => setRepo(event.target.value)}
+      />
+      <button
+        disabled={repo === ""}
+        onClick={handleAddRepo}
+        className="p-2 mt-4 rounded-lg bg-blue-500 text-gray-200 inline-flex items-center gap-2 justify-center hover:text-gray-600 hover:bg-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <PlusIcon className="w-4 h-4" />
+        Add Repo
+      </button>
+      <Divider />
+      <h3 className="mt-20">Saved Repos</h3>
       <Divider />
       <ul className="list-disc ml-4">
         {directories &&
@@ -54,20 +81,6 @@ function DirectoryTab() {
           handleSubmit={submitIndexRepo}
         />
       </div>
-      <input
-        className="w-full p-2 bg-white border-2 border-slate-200 rounded-lg mt-10"
-        type="text"
-        id="username"
-        value={repo}
-        onChange={(event) => setRepo(event.target.value)}
-      />
-      <button
-        onClick={handleAddRepo}
-        className="p-2 mt-4 rounded-lg bg-blue-500 text-gray-300 inline-flex items-center gap-2 justify-center hover:text-gray-600 hover:bg-blue-300 "
-      >
-        <PlusIcon className="w-4 h-4" />
-        Add Repo
-      </button>
 
       <h3 className="mt-20">Recently Added</h3>
       <Divider />

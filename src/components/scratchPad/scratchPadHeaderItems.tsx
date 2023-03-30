@@ -1,10 +1,10 @@
-import { FourDots, DirectoryIcon } from "../icons";
+import { DirectoryIcon, PaperIcon } from "../icons";
 
 export const menuItems = (activeTab: string) => [
   {
     name: "Scratch Pad",
     icon: (
-      <FourDots
+      <PaperIcon
         className={
           activeTab === "Scratch Pad"
             ? "w-5 h-5 mr-2 text-blue-600 dark:text-blue-500"

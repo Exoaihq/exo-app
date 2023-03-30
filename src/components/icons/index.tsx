@@ -5,3 +5,4 @@ export * from "./Plus";
 export * from "./CheckBadge";
 export * from "./UpArrow";
 export * from "./InformationCircle";
+export * from "./Paper";
