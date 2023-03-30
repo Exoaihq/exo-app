@@ -1,5 +1,6 @@
-import { Key, useEffect, useRef, useState } from "react";
-import { useDirectoryContext } from "../../context/directoryContext";
+import { useEffect, useRef, useState } from "react";
+import { useScratchPadContext } from "../../context/scratchPadContext";
+import DirectoryTab from "./directoryTab";
 
 export enum ChatUserType {
   system = "system",
@@ -43,7 +44,7 @@ function ScratchPadContainer({
   const messagesEndRef = useRef(null);
   const [dev, setDev] = useState(false);
 
-  const { directories } = useDirectoryContext();
+  const { activeTab } = useScratchPadContext();
 
   function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -104,23 +105,7 @@ function ScratchPadContainer({
         </div>
       )}
       {code && <pre className="bg-slate-100 p-4">{code}</pre>}
-      {
-        <div className="flex justify-end">
-          <ul>
-            {directories &&
-              directories.map(
-                (
-                  item: {
-                    file_path: string;
-                  },
-                  index: Key
-                ) => {
-                  return <li key={index}>{item.file_path}</li>;
-                }
-              )}
-          </ul>
-        </div>
-      }
+      {activeTab === "Repositories" && <DirectoryTab />}
     </div>
   );
 }
