@@ -18,7 +18,6 @@ export interface CodeCompletionResponse {
 }
 
 export interface CodeCompletionRequest {
-  messages: ChatMessage[];
   baseApiUrl: string;
   session: any;
   codeContent: string;
@@ -44,7 +43,6 @@ export function codeCompletion(
     },
     url: req.baseApiUrl + "/code",
     body: JSON.stringify({
-      messages: req.messages,
       codeContent: req.codeContent,
       fullFilePathWithName: req.fullFilePathWithName,
       sessionId: req.sessionId,

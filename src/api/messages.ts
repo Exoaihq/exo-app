@@ -57,7 +57,7 @@ export function getMessages(req: GetMessagesRequest): Promise<any> {
       "Content-Type": "application/json",
       access_token: req.session?.access_token,
       refresh_token: req.session?.refresh_token,
-      session_id: req.session?.sessionId,
+      session_id: req.sessionId,
     },
     url: req.baseApiUrl + "/messages",
   };

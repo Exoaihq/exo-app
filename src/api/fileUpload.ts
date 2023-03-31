@@ -13,10 +13,10 @@ export function fileUpload(
       "Content-Type": "application/json",
       access_token: req.session?.access_token,
       refresh_token: req.session?.refresh_token,
+      session_id: req.sessionId,
     },
     url: req.baseApiUrl + "/code/file",
     body: JSON.stringify({
-      messages: req.messages,
       codeContent: req.codeContent,
       fullFilePathWithName: req.fullFilePathWithName,
       sessionId: req.sessionId,

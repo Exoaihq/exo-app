@@ -13,7 +13,6 @@ function ScratchPadHeader() {
       <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
         <div className="md:hidden">
           <ScratchPadHeaderItem
-            activeTab={activeTab}
             name="Chat"
             icon={
               <ChatBubble
@@ -31,7 +30,6 @@ function ScratchPadHeader() {
           return (
             <ScratchPadHeaderItem
               key={index}
-              activeTab={activeTab}
               name={item.name}
               icon={item.icon}
               setActiveTab={setActiveTab}

@@ -22,22 +22,18 @@ declare global {
 }
 
 export interface ScratchPadContainerProps {
-  showFileSection: boolean;
   handleFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  selectedFile: File | null;
   code?: string;
 }
 
 function ScratchPadContainer({
-  showFileSection,
-  handleFileSelect,
-  selectedFile,
   code,
+  handleFileSelect,
 }: ScratchPadContainerProps) {
   const messagesEndRef = useRef(null);
 
   const { activeTab } = useScratchPadContext();
-  const { newFile, setRepo } = useDirectoryContext();
+  const { newFile, selectedFile, showFileSection } = useDirectoryContext();
 
   function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -66,7 +62,7 @@ function ScratchPadContainer({
         </div>
       )}
       {code && <pre className="bg-slate-100 p-4">{code}</pre>}
-      {activeTab === "Repositories" && <DirectoryTab />}
+      {activeTab === "Repos" && <DirectoryTab />}
     </div>
   );
 }

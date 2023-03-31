@@ -1,9 +1,9 @@
 import { createContext, useContext, useState } from "react";
 
-export type ActiveTab = "Scratch Pad" | "Repositories" | "Chat";
+export type ActiveTab = "Scratch Pad" | "Repos" | "Chat";
 
 export const ScratchPadContextWrapper = (props: any) => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("Repositories");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("Repos");
 
   const value = { activeTab, setActiveTab };
   return (
@@ -14,7 +14,7 @@ export const ScratchPadContextWrapper = (props: any) => {
 };
 
 export const ScratchPadContext = createContext({
-  activeTab: "Repositories" as ActiveTab,
+  activeTab: "Repos" as ActiveTab,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
   setActiveTab: (activeTab: ActiveTab) => {},
 });

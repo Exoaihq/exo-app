@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from "react";
+import { useMessageContext } from "../../context/messageContext";
 import { ChatMessage, ChatUserType } from "../../api";
 
-function ChatHistory({
-  history,
-  loading,
-}: {
-  history: ChatMessage[];
-  loading: boolean;
-}) {
+const startingHistory = [
+  {
+    role: ChatUserType.assistant,
+    content: "Hi! I'm your trusty Exo assistant. How can I help you today?",
+  },
+];
+
+function ChatHistory({ loading }: { loading: boolean }) {
+  const { messages } = useMessageContext();
+
   const messagesEndRef = useRef(null);
   const [loadingElipsis, setLoadingElipsis] = useState("...");
 
@@ -43,8 +47,13 @@ function ChatHistory({
   return (
     <div className="relative w-full p-6 overflow-y-auto h-[40rem]">
       <ul className="space-y-2 h-full">
-        {history &&
-          history.map((item, index) => {
+        <li className="flex justify-start">
+          <div className="relative max-w-xl px-4 py-2 text-gray-700 rounded shadow">
+            <span className="block">{startingHistory[0].content}</span>
+          </div>
+        </li>
+        {messages &&
+          messages.map((item: ChatMessage, index: any) => {
             const line =
               item.role === ChatUserType.assistant ? (
                 <li className="flex justify-start" key={index}>

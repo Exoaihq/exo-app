@@ -12,6 +12,8 @@ export const DirectoryContextWrapper = (props: any) => {
   const [directoryToIndex, setDirectoryToIndex] = useState(null);
   const [newFile, setNewFile] = useState(false);
   const [repo, setRepo] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File>(null);
+  const [showFileSection, setShowFileSection] = useState(false);
 
   function toggleToast() {
     setToast(!toastOpen);
@@ -74,6 +76,10 @@ export const DirectoryContextWrapper = (props: any) => {
     submitIndexRepo,
     newFile,
     setNewFile,
+    setSelectedFile,
+    selectedFile,
+    showFileSection,
+    setShowFileSection,
   };
   return (
     <DirectoryContext.Provider value={value}>
@@ -94,6 +100,10 @@ export const DirectoryContext = createContext({
   submitIndexRepo: () => {},
   newFile: false,
   setNewFile: (newFile: boolean) => {},
+  setSelectedFile: (file: File) => {},
+  selectedFile: null,
+  showFileSection: false,
+  setShowFileSection: (showFileSection: boolean) => {},
 });
 
 export const useDirectoryContext = () => useContext(DirectoryContext);

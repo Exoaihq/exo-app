@@ -1,16 +1,15 @@
 import { ReactElement } from "react";
-
+import { useScratchPadContext } from "../../context/scratchPadContext";
 function ScratchPadHeaderItem({
-  activeTab,
   name,
   icon,
   setActiveTab,
 }: {
-  activeTab: string;
   name: string;
   icon: ReactElement;
   setActiveTab: (name: string) => void;
 }) {
+  const { activeTab } = useScratchPadContext();
   const itemClass =
     activeTab === name
       ? "inline-flex p-4 border-b-2 border-transparent rounded-t-lg active dark:text-blue-500 dark:border-blue-500 group"
