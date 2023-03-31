@@ -42,7 +42,6 @@ export const SessionContextWrapper = (props: any) => {
   useEffect(() => {
     if (window) {
       window.api.getBaseApiUrl().then((res) => {
-        console.log("res ", res);
         setBaseApiUrl(res);
       });
       getSession();
