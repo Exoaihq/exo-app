@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useMessageContext } from "../../context/messageContext";
 import { ChatMessage, ChatUserType } from "../../api";
+import { useCodeCompletionContext } from "../../context";
 
 const startingHistory = [
   {
@@ -9,8 +10,9 @@ const startingHistory = [
   },
 ];
 
-function ChatHistory({ loading }: { loading: boolean }) {
+function ChatHistory() {
   const { messages } = useMessageContext();
+  const { loading, scratchPadLoading } = useCodeCompletionContext();
 
   const messagesEndRef = useRef(null);
   const [loadingElipsis, setLoadingElipsis] = useState("...");
@@ -81,6 +83,16 @@ function ChatHistory({ loading }: { loading: boolean }) {
             </div>
           </li>
         )}
+        {/* {scratchPadLoading && (
+          <li className="flex justify-start">
+            <div className="relative max-w-xl px-4 py-2 text-gray-700 rounded shadow">
+              <span className="block">
+                I'm running your command. Feel free to continue out
+                conversation...
+              </span>
+            </div>
+          </li>
+        )} */}
       </ul>
     </div>
   );

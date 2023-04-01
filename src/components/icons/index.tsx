@@ -6,3 +6,7 @@ export * from "./CheckBadge";
 export * from "./UpArrow";
 export * from "./InformationCircle";
 export * from "./Paper";
+export * from "./ChevronUp";
+export * from "./ChevronDown";
+export * from "./LoadingSpinner";
+export * from "./GreenCheck";

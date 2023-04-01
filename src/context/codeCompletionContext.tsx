@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { textIncludeScratchPad } from "../utils/parsingReturnedCode";
 import { codeCompletion } from "../api";
@@ -15,6 +15,7 @@ export const CodeCompletionContextWrapper = (props: any) => {
   const { setShowFileSection, selectedFile } = useDirectoryContext();
   const { setActiveTab } = useScratchPadContext();
   const [loading, setLoading] = useState(false);
+  const [scratchPadLoading, setScratchPadLoading] = useState(false);
   const [code, setCode] = useState("");
   const [projectDirectory, setProjectDirectory] = useState("");
   const [content, setContent] = useState("");
@@ -27,6 +28,7 @@ export const CodeCompletionContextWrapper = (props: any) => {
     onSuccess: async (res) => {
       setShowFileSection(true);
       queryClient.invalidateQueries("messages");
+      queryClient.invalidateQueries("ai-completed-code");
       const { metadata, completedCode } = res;
       const { projectDirectory, newFile } = metadata;
 
@@ -37,6 +39,7 @@ export const CodeCompletionContextWrapper = (props: any) => {
       projectDirectory && setProjectDirectory(projectDirectory);
 
       if (completedCode && selectedFile) {
+        setCode(completedCode);
         await window.api.createOrUpdateFile({
           completedCode,
           metadata: {
@@ -49,7 +52,6 @@ export const CodeCompletionContextWrapper = (props: any) => {
         });
       } else if (completedCode) {
         setCode(completedCode);
-        await window.api.createOrUpdateFile(res);
       }
     },
     onError(error: Error) {
@@ -57,6 +59,7 @@ export const CodeCompletionContextWrapper = (props: any) => {
     },
     onSettled: () => {
       setLoading(false);
+      setScratchPadLoading(false);
     },
   });
 
@@ -87,6 +90,14 @@ export const CodeCompletionContextWrapper = (props: any) => {
     });
   };
 
+  useEffect(() => {
+    if (loading) {
+      setTimeout(() => {
+        setScratchPadLoading(true);
+      }, 5000);
+    }
+  }, [loading]);
+
   const value = {
     handleCodeChatMutation,
     useCodeCompletion,
@@ -96,6 +107,7 @@ export const CodeCompletionContextWrapper = (props: any) => {
     setCode,
     handleGetFile,
     setContent,
+    scratchPadLoading,
   };
   return (
     <CodeCompletionContext.Provider value={value}>
@@ -113,6 +125,7 @@ export const CodeCompletionContext = createContext({
   setCode: (value: string) => {},
   handleGetFile: async (value: string) => await ({} as any),
   setContent: (value: string) => {},
+  scratchPadLoading: false,
 });
 
 export const useCodeCompletionContext = () => useContext(CodeCompletionContext);

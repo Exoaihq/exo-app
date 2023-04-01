@@ -3,3 +3,4 @@ export * from "./codeDirectory";
 export * from "./codeCompletion";
 export * from "./messages";
 export * from "./fileUpload";
+export * from "./aiCompletedCode";
