@@ -1,10 +1,10 @@
-import { Fragment } from "react";
 import { GetDirectoriesResponseObject } from "../../api";
 import { useDirectoryContext } from "../../context/directoryContext";
 import Divider from "../divider";
-import { UpArrowOnPaperIcon, PlusIcon } from "../icons";
+import { PlusIcon } from "../icons";
 
 import SimpleToast from "../toast/toast";
+import SavedRepoItem from "./saveRepoItem";
 
 function DirectoryTab() {
   const {
@@ -14,7 +14,6 @@ function DirectoryTab() {
     repo,
     setToast,
     toastOpen,
-    handleIndexRepo,
     directoryToIndex,
     submitIndexRepo,
   } = useDirectoryContext();
@@ -22,6 +21,30 @@ function DirectoryTab() {
   async function getDir() {
     const dirHandle = await window.showDirectoryPicker();
     setRepo("/" + dirHandle.name);
+  }
+
+  function getIndexMessageTitle() {
+    if (!directoryToIndex) {
+      return "";
+    }
+    return `${
+      directoryToIndex?.indexed_at
+        ? `Refresh ${directoryToIndex?.directory_name}`
+        : `Index ${directoryToIndex?.directory_name}`
+    }?`;
+  }
+
+  function getIndexMessage() {
+    if (!directoryToIndex) {
+      return "";
+    }
+    return `${
+      directoryToIndex?.indexed_at
+        ? `Refreshing the index for this repo will add any new files and update any existing files.`
+        : `Indexing this repo will allow you to search and edit files within the repo. It does take a couple mintues to index.`
+    }`;
+
+    return;
   }
 
   return (
@@ -53,27 +76,14 @@ function DirectoryTab() {
       <ul className="list-disc ml-4">
         {directories &&
           directories.map((directory: GetDirectoriesResponseObject) => {
-            return (
-              <Fragment key={directory.id}>
-                {directory && directory.saved && (
-                  <div
-                    onClick={() => handleIndexRepo(directory)}
-                    className="flex flex-row items-center hover:text-blue-500"
-                  >
-                    <li className="font-light mr-2">
-                      {directory.directory_name}
-                    </li>
-                    <UpArrowOnPaperIcon className="w-4 h-4" />
-                  </div>
-                )}
-              </Fragment>
-            );
+            console.log(directory);
+            return <SavedRepoItem directory={directory} />;
           })}
       </ul>
       <div className="absolute">
         <SimpleToast
-          title={`Index ${directoryToIndex?.directory_name}?`}
-          message={`Indexing this repo will allow you to search and edit files within the repo. It does take a couple mintues to index.`}
+          title={getIndexMessageTitle()}
+          message={getIndexMessage()}
           buttonText="Yes"
           cancelButtonText="Not now"
           open={toastOpen}

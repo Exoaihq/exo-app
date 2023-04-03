@@ -4,3 +4,4 @@ export * from "./codeCompletion";
 export * from "./messages";
 export * from "./fileUpload";
 export * from "./aiCompletedCode";
+export * from "./codeFile";

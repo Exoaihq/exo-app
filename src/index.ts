@@ -6,6 +6,7 @@ import {
   createFile,
   getFileContent,
   getRootParentDirectory,
+  iterateDir,
   overwriteFile,
 } from "./utils/fileSystem";
 todesktop.init();
@@ -59,10 +60,9 @@ const createWindow = (): void => {
   const parentDirectory = getRootParentDirectory(process.cwd());
   console.log(parentDirectory);
 
-  ipcMain.handle("get-directories", (event, response) => {
-    // const res = foundDirectory(parentDirectory, response);
-    // console.log("main", res);
-    return response;
+  ipcMain.handle("get-directories", async (event, response) => {
+    const res = await iterateDir(response.file_path);
+    return res;
   });
 
   ipcMain.handle("process", (event, response) => {
@@ -75,7 +75,13 @@ const createWindow = (): void => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createWindow);
+app.on("ready", () => {
+  setTimeout(() => {
+    console.log("ready");
+  }, 1000);
+
+  createWindow();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

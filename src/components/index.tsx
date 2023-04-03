@@ -1,5 +1,9 @@
 import { QueryClient, QueryClientProvider } from "react-query";
-import { OpenAiResponseAndMetadata } from "../api";
+import { FilePathAndContent } from "../utils/fileSystem";
+import {
+  GetDirectoriesResponseObject,
+  OpenAiResponseAndMetadata,
+} from "../api";
 
 import {
   AiCompletedCodeContextWrapper,
@@ -18,7 +22,9 @@ declare global {
       createOrUpdateFile: (response: OpenAiResponseAndMetadata) => Promise<any>;
       getBaseApiUrl: () => Promise<string>;
       getFile: (path: string) => string;
-      getAndParseDirectories: (path: string) => string[];
+      getAndParseDirectories: (
+        directory: GetDirectoriesResponseObject
+      ) => FilePathAndContent[];
     };
   }
 }

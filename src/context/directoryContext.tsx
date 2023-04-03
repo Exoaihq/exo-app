@@ -2,22 +2,43 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { createContext, useContext, useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { createDirectory, getDirectories } from "../api";
+
+import {
+  createDirectory,
+  getDirectories,
+  createFiles,
+  GetDirectoriesRequest,
+  GetDirectoriesResponseObject,
+} from "../api";
 import { useSessionContext } from "./sessionContext";
 
 export const DirectoryContextWrapper = (props: any) => {
   const queryClient = useQueryClient();
   const { session, baseApiUrl, sessionId } = useSessionContext();
   const [toastOpen, setToast] = useState(false);
-  const [directoryToIndex, setDirectoryToIndex] = useState(null);
+  const [directoryToIndex, setDirectoryToIndex] =
+    useState<GetDirectoriesResponseObject | null>(null);
   const [newFile, setNewFile] = useState(false);
   const [repo, setRepo] = useState("");
   const [selectedFile, setSelectedFile] = useState<File>(null);
   const [showFileSection, setShowFileSection] = useState(false);
+  const [indexingLoading, setIndexingLoading] = useState(false);
 
   function toggleToast() {
     setToast(!toastOpen);
   }
+
+  const useCreateFilesMutation = useMutation(createFiles, {
+    onSuccess: async (res) => {
+      queryClient.invalidateQueries("directory");
+    },
+    onError(error: Error) {
+      console.log(error);
+    },
+    onSettled: () => {
+      setIndexingLoading(false);
+    },
+  });
 
   const useCreateRepoMutation = useMutation(createDirectory, {
     onSuccess: async (res) => {
@@ -42,13 +63,24 @@ export const DirectoryContextWrapper = (props: any) => {
     console.log("add repo", repo);
   }
 
-  function handleIndexRepo(directory: any) {
+  function handleIndexRepo(directory: GetDirectoriesResponseObject) {
     setDirectoryToIndex(directory);
     setToast(true);
+
+    console.log("index repo", directory);
   }
 
-  function submitIndexRepo() {
-    console.log(directoryToIndex);
+  async function submitIndexRepo() {
+    const res = await window.api.getAndParseDirectories(directoryToIndex);
+    useCreateFilesMutation.mutate({
+      session,
+      baseApiUrl,
+      sessionId,
+      files: res,
+    });
+    setToast(false);
+    setIndexingLoading(true);
+    console.log(res);
   }
 
   const { data } = useQuery({
@@ -80,6 +112,7 @@ export const DirectoryContextWrapper = (props: any) => {
     selectedFile,
     showFileSection,
     setShowFileSection,
+    indexingLoading,
   };
   return (
     <DirectoryContext.Provider value={value}>
@@ -104,6 +137,7 @@ export const DirectoryContext = createContext({
   selectedFile: null,
   showFileSection: false,
   setShowFileSection: (showFileSection: boolean) => {},
+  indexingLoading: false,
 });
 
 export const useDirectoryContext = () => useContext(DirectoryContext);

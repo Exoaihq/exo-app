@@ -17,6 +17,6 @@ contextBridge.exposeInMainWorld("api", {
   getFile: (response: string) =>
     ipcRenderer.invoke("get-file-contents", response),
 
-  getDirectories: (response: string) =>
+  getAndParseDirectories: (response: string) =>
     ipcRenderer.invoke("get-directories", response),
 });

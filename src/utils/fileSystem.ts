@@ -32,7 +32,7 @@ export const getRootParentDirectory = (source: string): any => {
 
 export const getChildDirectories = (source: string) => {
   return fs
-    .readdirSync(source)
+    .readdir(source)
     .map((name: string) => path.join(source, name))
     .filter((source: string) => fs.lstatSync(source).isDirectory());
 };
@@ -83,18 +83,74 @@ export const findNamedDirectory = (
   }
 };
 
-export const foundDirectory = (parentDirectory: string, response: string) => {
-  const children = getChildDirectories(parentDirectory);
+export const getChildDirectoriesAsync = async (source: string) => {
+  return await fs.promises.readdir(source);
+};
 
-  const directoriesToSearch = children;
-  const found = false;
+const foldersToExclude = [
+  "node_modules",
+  "dist",
+  ".vscode",
+  ".git",
+  "yarn.lock",
+];
 
-  while (!found && directoriesToSearch.length > 0) {
-    const res = findNamedDirectory(directoriesToSearch, response);
-    if (res && res.found) {
-      return found;
-    } else if (res) {
-      directoriesToSearch.push(res.childrenDirectories);
-    }
+const filesToExcule = ["yarn.lock", ".json", "supabase.ts"];
+
+function doesPathContainFolderToExclude(path: string): boolean {
+  return foldersToExclude.some((folder) => path.includes(folder));
+}
+
+function doesPathContainFileToExclude(path: string): boolean {
+  return filesToExcule.some((file) => path.includes(file));
+}
+
+export interface FilePathAndContent {
+  filePath: string;
+  contents: string;
+}
+
+function dirIt(directory: string, files: FilePathAndContent[], dirs: string[]) {
+  try {
+    const dirContent = fs.readdirSync(directory);
+
+    dirContent.forEach((path: string) => {
+      const fullPath = `${directory}/${path}`;
+
+      if (fs.statSync(fullPath).isFile()) {
+        if (doesPathContainFileToExclude(path)) {
+          // console.log("Skipping >>>>>>>>>>>>>>>>>>", filePath);
+        } else {
+          const contents = fs.readFileSync(fullPath, "utf8");
+          files.push({
+            filePath: fullPath,
+            contents,
+          });
+        }
+      } else {
+        if (doesPathContainFolderToExclude(path)) {
+          // console.log("Skipping >>>>>>>>>>>>>>>>>>", filePath);
+        } else {
+          dirs.push(fullPath);
+        }
+      }
+    });
+
+    if (dirs.length !== 0) dirIt(dirs.pop(), files, dirs);
+
+    return files;
+  } catch (ex) {
+    console.log(ex);
+    return false;
   }
+}
+
+export const iterateDir = (directory: string) => {
+  const files: FilePathAndContent[] = [];
+  const dirs: string[] = [];
+
+  const res = dirIt(directory, files, dirs);
+
+  console.log(res.length, files.length, dirs.length);
+  return res;
 };

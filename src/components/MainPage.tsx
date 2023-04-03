@@ -21,9 +21,8 @@ const queryClient = new QueryClient();
 
 const MainPage = () => {
   const { session, baseApiUrl, sessionId } = useSessionContext();
-  const { loading, setLoading, handleGetFile, setContent } =
-    useCodeCompletionContext();
-  const { selectedFile, setSelectedFile } = useDirectoryContext();
+  const { setLoading, handleGetFile, setContent } = useCodeCompletionContext();
+  const { selectedFile } = useDirectoryContext();
 
   const { activeTab, setActiveTab } = useScratchPadContext();
   const { setNewFile } = useDirectoryContext();
@@ -31,11 +30,6 @@ const MainPage = () => {
 
   const breakPoint = 768;
   const screenWidth = useWindowWidth();
-
-  function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files[0];
-    setSelectedFile(file);
-  }
 
   const useFileUploadMutation = useMutation(fileUpload, {
     onSuccess: async (res) => {
@@ -121,10 +115,6 @@ const MainPage = () => {
     if (screenWidth < breakPoint) {
       setActiveTab("Chat");
     }
-
-    if (screenWidth > breakPoint) {
-      setActiveTab("Scratch Pad");
-    }
   }, [screenWidth]);
 
   return (
@@ -135,25 +125,25 @@ const MainPage = () => {
             <ChatHeader />
             {screenWidth > breakPoint ? (
               <Fragment>
-                <ChatHistory loading={loading} />
+                <ChatHistory />
                 <ChatInput handleSubmit={handleSubmit} />
               </Fragment>
             ) : (
               <div>
                 {activeTab === "Chat" ? (
                   <Fragment>
-                    <ChatHistory loading={loading} />
+                    <ChatHistory />
                     <ChatInput handleSubmit={handleSubmit} />{" "}
                   </Fragment>
                 ) : (
-                  <ScratchPadContainer handleFileSelect={handleFileSelect} />
+                  <ScratchPadContainer />
                 )}
               </div>
             )}
           </div>
           <div className="hidden md:block">
             <ScratchPadHeader />
-            <ScratchPadContainer handleFileSelect={handleFileSelect} />
+            <ScratchPadContainer />
           </div>
         </div>
       )}
