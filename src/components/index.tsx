@@ -15,6 +15,7 @@ import {
 } from "../context";
 
 import MainPage from "./MainPage";
+import { FileUploadContextWrapper } from "../context/fileUpdateContext";
 
 declare global {
   interface Window {
@@ -24,7 +25,7 @@ declare global {
       getFile: (path: string) => string;
       getAndParseDirectories: (
         directory: GetDirectoriesResponseObject
-      ) => FilePathAndContent[];
+      ) => Promise<FilePathAndContent[]>;
     };
   }
 }
@@ -36,13 +37,15 @@ const App = () => {
       <SessionContextWrapper>
         <DirectoryContextWrapper>
           <ScratchPadContextWrapper>
-            <CodeCompletionContextWrapper>
-              <AiCompletedCodeContextWrapper>
-                <MessageContextWrapper>
-                  <MainPage />
-                </MessageContextWrapper>
-              </AiCompletedCodeContextWrapper>
-            </CodeCompletionContextWrapper>
+            <FileUploadContextWrapper>
+              <CodeCompletionContextWrapper>
+                <AiCompletedCodeContextWrapper>
+                  <MessageContextWrapper>
+                    <MainPage />
+                  </MessageContextWrapper>
+                </AiCompletedCodeContextWrapper>
+              </CodeCompletionContextWrapper>
+            </FileUploadContextWrapper>
           </ScratchPadContextWrapper>
         </DirectoryContextWrapper>
       </SessionContextWrapper>

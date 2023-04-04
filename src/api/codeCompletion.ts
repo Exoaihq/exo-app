@@ -11,6 +11,7 @@ export interface OpenAiResponseAndMetadata {
   choices: Choices[];
   metadata: CodeCompletionResponseMetadata;
   completedCode: string;
+  search?: [any];
 }
 
 export interface CodeCompletionResponse {

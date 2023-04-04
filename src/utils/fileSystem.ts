@@ -93,9 +93,39 @@ const foldersToExclude = [
   ".vscode",
   ".git",
   "yarn.lock",
+  ".DS_Store",
+  "code-gen-app-darwin-x64",
+  "exo-app-darwin-x64",
+  "make",
+  ".webpack",
+  "build",
+  "out",
+  "target",
+  "bin",
+  "obj",
+  "cache",
+  "logs",
+  "Downloads",
+  "Accounts",
 ];
 
-const filesToExcule = ["yarn.lock", ".json", "supabase.ts"];
+const filesToExcule = [
+  "yarn.lock",
+  ".json",
+  "supabase.ts",
+  "yarn-error.log",
+  ".eslintrc.json",
+  ".git",
+  ".gitignore",
+  ".DS_Store",
+  "package-lock.json",
+  ".png",
+  ".jpg",
+  ".jpeg",
+  ".svg",
+  ".ico",
+  ".pdf",
+];
 
 function doesPathContainFolderToExclude(path: string): boolean {
   return foldersToExclude.some((folder) => path.includes(folder));
@@ -110,16 +140,21 @@ export interface FilePathAndContent {
   contents: string;
 }
 
-function dirIt(directory: string, files: FilePathAndContent[], dirs: string[]) {
+async function dirIt(
+  directory: string,
+  files: FilePathAndContent[],
+  dirs: string[]
+) {
   try {
     const dirContent = fs.readdirSync(directory);
+    console.log(dirContent);
 
     dirContent.forEach((path: string) => {
       const fullPath = `${directory}/${path}`;
 
       if (fs.statSync(fullPath).isFile()) {
         if (doesPathContainFileToExclude(path)) {
-          // console.log("Skipping >>>>>>>>>>>>>>>>>>", filePath);
+          console.log("Skipping >>>>>>>>>>>>>>>>>>", path);
         } else {
           const contents = fs.readFileSync(fullPath, "utf8");
           files.push({
@@ -145,11 +180,11 @@ function dirIt(directory: string, files: FilePathAndContent[], dirs: string[]) {
   }
 }
 
-export const iterateDir = (directory: string) => {
+export const iterateDir = async (directory: string) => {
   const files: FilePathAndContent[] = [];
   const dirs: string[] = [];
 
-  const res = dirIt(directory, files, dirs);
+  const res = await dirIt(directory, files, dirs);
 
   console.log(res.length, files.length, dirs.length);
   return res;

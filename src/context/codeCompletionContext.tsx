@@ -8,29 +8,36 @@ import { useDirectoryContext } from "./directoryContext";
 import { useScratchPadContext } from "./scratchPadContext";
 
 import { useSessionContext } from "./sessionContext";
+import { useFileUploadContext } from "./fileUpdateContext";
 
 export const CodeCompletionContextWrapper = (props: any) => {
   const queryClient = useQueryClient();
   const { session, baseApiUrl, sessionId } = useSessionContext();
-  const { setShowFileSection, selectedFile } = useDirectoryContext();
+  const { content, selectedFile } = useFileUploadContext();
+  const { setShowFileSection } = useDirectoryContext();
   const { setActiveTab } = useScratchPadContext();
   const [loading, setLoading] = useState(false);
   const [scratchPadLoading, setScratchPadLoading] = useState(false);
   const [code, setCode] = useState("");
   const [projectDirectory, setProjectDirectory] = useState("");
-  const [content, setContent] = useState("");
 
-  async function handleGetFile(fullpath: string) {
-    return await window.api.getFile(fullpath);
-  }
+  const [searchResults, setSearchResults] = useState();
 
   const useCodeCompletion = useMutation(codeCompletion, {
     onSuccess: async (res) => {
       setShowFileSection(true);
       queryClient.invalidateQueries("messages");
       queryClient.invalidateQueries("ai-completed-code");
-      const { metadata, completedCode } = res;
+      const { metadata, completedCode, search } = res;
       const { projectDirectory, newFile } = metadata;
+
+      setLoading(false);
+      setScratchPadLoading(false);
+
+      if (search) {
+        setActiveTab("Scratch Pad");
+        setSearchResults(search);
+      }
 
       if (newFile) {
         setActiveTab("Repos");
@@ -63,6 +70,10 @@ export const CodeCompletionContextWrapper = (props: any) => {
     },
   });
 
+  async function handleGetFile(fullpath: string) {
+    return await window.api.getFile(fullpath);
+  }
+
   const handleCodeChatMutation = async (contentToUpdate?: string) => {
     setLoading(true);
 
@@ -90,13 +101,13 @@ export const CodeCompletionContextWrapper = (props: any) => {
     });
   };
 
-  useEffect(() => {
-    if (loading) {
-      setTimeout(() => {
-        setScratchPadLoading(true);
-      }, 5000);
-    }
-  }, [loading]);
+  // useEffect(() => {
+  //   if (loading) {
+  //     setTimeout(() => {
+  //       setScratchPadLoading(true);
+  //     }, 5000);
+  //   }
+  // }, [loading]);
 
   const value = {
     handleCodeChatMutation,
@@ -105,9 +116,9 @@ export const CodeCompletionContextWrapper = (props: any) => {
     setLoading,
     code,
     setCode,
-    handleGetFile,
-    setContent,
+
     scratchPadLoading,
+    searchResults,
   };
   return (
     <CodeCompletionContext.Provider value={value}>
@@ -123,9 +134,9 @@ export const CodeCompletionContext = createContext({
   setLoading: (value: boolean) => {},
   code: "",
   setCode: (value: string) => {},
-  handleGetFile: async (value: string) => await ({} as any),
-  setContent: (value: string) => {},
+
   scratchPadLoading: false,
+  searchResults: [],
 });
 
 export const useCodeCompletionContext = () => useContext(CodeCompletionContext);

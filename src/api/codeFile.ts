@@ -2,6 +2,7 @@ import { FilePathAndContent } from "../utils/fileSystem";
 
 export interface CreateFilesRequest {
   files: FilePathAndContent[];
+  directoryId: string;
   baseApiUrl: string;
   session: any;
   sessionId: string;
@@ -20,6 +21,7 @@ export function createFiles(req: CreateFilesRequest): Promise<any> {
     body: JSON.stringify({
       files: req.files,
       sessionId: req.sessionId,
+      directoryId: req.directoryId,
     }),
   };
 

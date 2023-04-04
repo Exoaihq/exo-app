@@ -1,16 +1,17 @@
+import { GetAiCompletedCodeResponseObject } from "../../api";
 import {
-  useDirectoryContext,
-  useCodeCompletionContext,
   useAiCompletedCodeContext,
+  useCodeCompletionContext,
   useScratchPadContext,
 } from "../../context";
-import { GetAiCompletedCodeResponseObject } from "../../api";
-import LoadingIndicator from "./completedCode.tsx/loadingIndicator";
+import { useFileUploadContext } from "../../context/fileUpdateContext";
 import Divider from "../divider";
 import CompletedCode from "./completedCode.tsx/completedCode";
+import LoadingIndicator from "./completedCode.tsx/loadingIndicator";
+import SearchList from "./searchList";
 
 function ScatchPadTab() {
-  const { newFile, selectedFile, setSelectedFile } = useDirectoryContext();
+  const { newFile, selectedFile, setSelectedFile } = useFileUploadContext();
   const { scratchPadLoading } = useCodeCompletionContext();
   const { data } = useAiCompletedCodeContext();
   const { activeTab } = useScratchPadContext();
@@ -33,6 +34,7 @@ function ScatchPadTab() {
           )}
         </div>
       )}
+
       {scratchPadLoading && (
         <div className="mt-8">
           <LoadingIndicator />
@@ -44,6 +46,9 @@ function ScatchPadTab() {
         data.map((item: GetAiCompletedCodeResponseObject, index: any) => {
           return <CompletedCode key={index} data={item} />;
         })}
+      <div className="mt-4">
+        <SearchList />
+      </div>
     </div>
   );
 }

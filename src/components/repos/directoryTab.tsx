@@ -43,8 +43,6 @@ function DirectoryTab() {
         ? `Refreshing the index for this repo will add any new files and update any existing files.`
         : `Indexing this repo will allow you to search and edit files within the repo. It does take a couple mintues to index.`
     }`;
-
-    return;
   }
 
   return (
@@ -76,8 +74,7 @@ function DirectoryTab() {
       <ul className="list-disc ml-4">
         {directories &&
           directories.map((directory: GetDirectoriesResponseObject) => {
-            console.log(directory);
-            return <SavedRepoItem directory={directory} />;
+            return <SavedRepoItem directory={directory} key={directory.id} />;
           })}
       </ul>
       <div className="absolute">
@@ -96,13 +93,19 @@ function DirectoryTab() {
       <Divider />
       <ul className="list-disc ml-4">
         {directories &&
-          directories.map((directory: GetDirectoriesResponseObject) => {
-            return (
-              <div key={directory.id}>
-                <li className="font-light">{directory.file_path}</li>
-              </div>
-            );
-          })}
+          directories.map(
+            (directory: GetDirectoriesResponseObject, index: any) => {
+              // Only show the last 10 directories
+              if (index > 10) {
+                return;
+              }
+              return (
+                <div key={directory.id}>
+                  <li className="font-light">{directory.file_path}</li>
+                </div>
+              );
+            }
+          )}
       </ul>
     </div>
   );

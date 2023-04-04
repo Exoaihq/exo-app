@@ -35,6 +35,7 @@ function ChatInput({
         userMessages[index - 1]
       ) {
         textBoxRef.current.value = userMessages[index - 1].content;
+        setValue(userMessages[index - 1].content);
       }
     }
   }, [index]);

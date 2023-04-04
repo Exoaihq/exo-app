@@ -1,9 +1,6 @@
 import { Fragment, useEffect } from "react";
-import { QueryClient, useMutation } from "react-query";
-import { ChatUserType, fileUpload } from "../api";
+import { ChatUserType } from "../api";
 import {
-  useCodeCompletionContext,
-  useDirectoryContext,
   useMessageContext,
   useScratchPadContext,
   useSessionContext,
@@ -17,51 +14,14 @@ import LoginForm from "./Login";
 import ScratchPadContainer from "./scratchPad/scratchPadContainer";
 import ScratchPadHeader from "./scratchPad/scratchPadHeader";
 
-const queryClient = new QueryClient();
-
 const MainPage = () => {
   const { session, baseApiUrl, sessionId } = useSessionContext();
-  const { setLoading, handleGetFile, setContent } = useCodeCompletionContext();
-  const { selectedFile } = useDirectoryContext();
 
   const { activeTab, setActiveTab } = useScratchPadContext();
-  const { setNewFile } = useDirectoryContext();
   const { useCreateMessage } = useMessageContext();
 
   const breakPoint = 768;
   const screenWidth = useWindowWidth();
-
-  const useFileUploadMutation = useMutation(fileUpload, {
-    onSuccess: async (res) => {
-      queryClient.invalidateQueries("messages");
-      const { metadata } = res;
-      const { newFile } = metadata;
-
-      newFile !== null && setNewFile(newFile);
-    },
-    onError(error: Error) {
-      console.log(error);
-      // setHistory([
-      //   ...history,
-      //   { role: ChatUserType.assistant, content: getFunnyErrorMessage() },
-      // ]);
-    },
-    onSettled: () => {
-      setLoading(false);
-    },
-  });
-
-  const handleFileUpload = async (value: string, contentToUpdate: string) => {
-    setLoading(true);
-
-    useFileUploadMutation.mutate({
-      baseApiUrl,
-      session,
-      codeContent: contentToUpdate,
-      fullFilePathWithName: selectedFile ? selectedFile.path : "",
-      sessionId,
-    });
-  };
 
   async function handleSubmit(value: string) {
     await useCreateMessage.mutate({
@@ -98,18 +58,6 @@ const MainPage = () => {
   //   stream.getTracks().forEach((track) => track.on);
   //   return stream;
   // }
-
-  useEffect(() => {
-    if (selectedFile) {
-      handleGetFile(selectedFile.path).then((content) => {
-        setContent(content);
-
-        if (content) {
-          handleFileUpload("Here is a file I'd like to update", content);
-        }
-      });
-    }
-  }, [selectedFile]);
 
   useEffect(() => {
     if (screenWidth < breakPoint) {

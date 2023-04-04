@@ -18,9 +18,9 @@ export const DirectoryContextWrapper = (props: any) => {
   const [toastOpen, setToast] = useState(false);
   const [directoryToIndex, setDirectoryToIndex] =
     useState<GetDirectoriesResponseObject | null>(null);
-  const [newFile, setNewFile] = useState(false);
+
   const [repo, setRepo] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File>(null);
+
   const [showFileSection, setShowFileSection] = useState(false);
   const [indexingLoading, setIndexingLoading] = useState(false);
 
@@ -106,10 +106,7 @@ export const DirectoryContextWrapper = (props: any) => {
     handleIndexRepo,
     directoryToIndex,
     submitIndexRepo,
-    newFile,
-    setNewFile,
-    setSelectedFile,
-    selectedFile,
+
     showFileSection,
     setShowFileSection,
     indexingLoading,
@@ -131,10 +128,7 @@ export const DirectoryContext = createContext({
   handleIndexRepo: (directory: any) => {},
   directoryToIndex: null,
   submitIndexRepo: () => {},
-  newFile: false,
-  setNewFile: (newFile: boolean) => {},
-  setSelectedFile: (file: File) => {},
-  selectedFile: null,
+
   showFileSection: false,
   setShowFileSection: (showFileSection: boolean) => {},
   indexingLoading: false,
