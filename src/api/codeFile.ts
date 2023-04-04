@@ -2,10 +2,10 @@ import { FilePathAndContent } from "../utils/fileSystem";
 
 export interface CreateFilesRequest {
   files: FilePathAndContent[];
-  directoryId: string;
   baseApiUrl: string;
   session: any;
   sessionId: string;
+  directoryId?: string;
 }
 
 export function createFiles(req: CreateFilesRequest): Promise<any> {

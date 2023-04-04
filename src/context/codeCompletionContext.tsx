@@ -21,7 +21,7 @@ export const CodeCompletionContextWrapper = (props: any) => {
   const [code, setCode] = useState("");
   const [projectDirectory, setProjectDirectory] = useState("");
 
-  const [searchResults, setSearchResults] = useState();
+  const [searchResults, setSearchResults] = useState<any>();
 
   const useCodeCompletion = useMutation(codeCompletion, {
     onSuccess: async (res) => {

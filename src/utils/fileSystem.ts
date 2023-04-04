@@ -186,6 +186,5 @@ export const iterateDir = async (directory: string) => {
 
   const res = await dirIt(directory, files, dirs);
 
-  console.log(res.length, files.length, dirs.length);
   return res;
 };
