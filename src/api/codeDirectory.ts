@@ -19,6 +19,7 @@ export interface GetDirectoriesResponseObject {
   file_path: string;
   directory_name: string;
   indexed_at: string;
+  directory_explaination?: string;
 }
 
 export interface GetDirectoriesResponse {

@@ -26,6 +26,7 @@ declare global {
       getAndParseDirectories: (
         directory: GetDirectoriesResponseObject
       ) => Promise<FilePathAndContent[]>;
+      selectFolder: () => Promise<string>;
     };
   }
 }

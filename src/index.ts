@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, dialog, ipcMain } from "electron";
 import { OpenAiResponseAndMetadata } from "./api/codeCompletion";
 
 import todesktop from "@todesktop/runtime";
@@ -55,6 +55,17 @@ const createWindow = (): void => {
 
   ipcMain.handle("get-file-contents", (event, response) => {
     return getFileContent(response);
+  });
+
+  ipcMain.handle("dialog:openDirectory", async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      properties: ["openDirectory"],
+    });
+    if (canceled) {
+      return;
+    } else {
+      return filePaths[0];
+    }
   });
 
   const parentDirectory = getRootParentDirectory(process.cwd());

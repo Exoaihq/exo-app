@@ -19,4 +19,6 @@ contextBridge.exposeInMainWorld("api", {
 
   getAndParseDirectories: async (response: string) =>
     await ipcRenderer.invoke("get-directories", response),
+
+  selectFolder: () => ipcRenderer.invoke("dialog:openDirectory"),
 });

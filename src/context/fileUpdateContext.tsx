@@ -28,7 +28,6 @@ export const FileUploadContextWrapper = (props: any) => {
     },
     onSettled: () => {
       setLoading(false);
-      setSelectedFile(null);
     },
   });
 

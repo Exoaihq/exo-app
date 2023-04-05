@@ -42,6 +42,7 @@ export const DirectoryContextWrapper = (props: any) => {
   const useCreateRepoMutation = useMutation(createDirectory, {
     onSuccess: async (res) => {
       queryClient.invalidateQueries("directory");
+      queryClient.invalidateQueries("messages");
     },
     onError(error: Error) {
       console.log(error);

@@ -35,30 +35,6 @@ const MainPage = () => {
     });
   }
 
-  // async function startStream() {
-  //   const stream = await navigator.mediaDevices.getUserMedia({
-  //     audio: true,
-  //     video: false,
-  //   });
-
-  //   const context = new AudioContext();
-  //   const destination = context.createMediaStreamDestination();
-
-  //   const source = context.createMediaStreamSource(stream);
-  //   const voiceGain = context.createGain();
-  //   voiceGain.gain.value = 0.7;
-  //   source.connect(voiceGain).connect(destination);
-
-  //   console.log("Audio stream started", stream);
-  //   setTimeout(() => {
-  //     destination.
-  //     stream.getTracks().forEach((track) => track.stop());
-  //     stream.getAudioTracks().forEach((track) => console.log(track));
-  //   }, 4000);
-  //   stream.getTracks().forEach((track) => track.on);
-  //   return stream;
-  // }
-
   useEffect(() => {
     if (screenWidth < breakPoint) {
       setActiveTab("Chat");
