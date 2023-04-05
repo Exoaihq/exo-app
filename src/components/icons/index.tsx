@@ -11,3 +11,4 @@ export * from "./ChevronDown";
 export * from "./LoadingSpinner";
 export * from "./GreenCheck";
 export * from "./Refresh";
+export * from "./PaperAirplane";

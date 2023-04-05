@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { GetDirectoriesResponseObject } from "../../api";
 import { useDirectoryContext } from "../../context";
-import { formatDate } from "../../hooks/parseTimeStamp";
+import { formatTimeStampToHumanReadableShortDateTime } from "../../hooks/parseTimeStamp";
 import { LoadingSpinnerIcon, RefreshIcon, UpArrowOnPaperIcon } from "../icons";
 
 function SavedRepoItem({
@@ -20,7 +20,9 @@ function SavedRepoItem({
           <li className="font-light mr-2">
             {directory.directory_name}{" "}
             {directory.indexed_at &&
-              ` | Indexed: ${formatDate(directory.indexed_at)}`}
+              ` | Indexed: ${formatTimeStampToHumanReadableShortDateTime(
+                directory.indexed_at
+              )}`}
           </li>
           {directory.indexed_at ? (
             <Fragment>

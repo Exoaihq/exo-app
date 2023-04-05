@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useFileUploadContext } from "../../context/fileUpdateContext";
-import { formatDate } from "../../hooks/parseTimeStamp";
+import { formatTimeStampToHumanReadableShortDateTime } from "../../hooks/parseTimeStamp";
 import Divider from "../divider";
 import { ChevronDownIcon, ChevronUpIcon } from "../icons";
 
@@ -39,7 +39,9 @@ const CodeListItem = (props: CodeListItemProps) => {
       >
         Select
       </button>
-      <p className="text-sm">{formatDate(date)}</p>
+      <p className="text-sm">
+        {formatTimeStampToHumanReadableShortDateTime(date)}
+      </p>
       <div className="flex flex-row space-between">
         <p className="grow">{truncateText(title)}</p>
         <button onClick={toggle} className={"basis-1/4"}>

@@ -20,6 +20,7 @@ export enum ChatUserType {
 export interface ChatMessage {
   role: ChatUserType;
   content: string;
+  created_at?: string;
 }
 
 export function createMessage(req: CreateMessagesRequest): Promise<any> {
