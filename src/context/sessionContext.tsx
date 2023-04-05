@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { createClient } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -15,6 +16,7 @@ export const SessionContextWrapper = (props: any) => {
   const [sessionId, setSessionId] = useState(uuidv4());
   const [session, setSession] = useState(null);
   const [loginErrorMessage, setLoginErrorMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   async function handleLogin(email: string, password: string) {
     const res = await supabase.auth.signInWithPassword({
@@ -56,6 +58,8 @@ export const SessionContextWrapper = (props: any) => {
     getSession,
     baseApiUrl,
     loginErrorMessage,
+    setLoading,
+    loading,
   };
   return (
     <SessionContext.Provider value={value}>
@@ -73,6 +77,8 @@ export const SessionContext = createContext({
   getSession: () => {},
   baseApiUrl: "",
   loginErrorMessage: null,
+  setLoading: (value: boolean) => {},
+  loading: false,
 });
 
 export const useSessionContext = () => useContext(SessionContext);

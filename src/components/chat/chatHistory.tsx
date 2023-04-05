@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useRef } from "react";
 import { ChatMessage, ChatUserType } from "../../api";
-import { useCodeCompletionContext } from "../../context";
+import { useSessionContext } from "../../context";
 import { useMessageContext } from "../../context/messageContext";
 import ChatHistoryItem, {
   AssistentMessage,
@@ -16,7 +16,7 @@ const startingHistory = [
 
 function ChatHistory() {
   const { messages } = useMessageContext();
-  const { loading } = useCodeCompletionContext();
+  const { loading } = useSessionContext();
 
   const messagesEndRef = useRef(null);
 

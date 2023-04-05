@@ -16,7 +16,7 @@ export const CodeCompletionContextWrapper = (props: any) => {
   const { content, selectedFile } = useFileUploadContext();
   const { setShowFileSection } = useDirectoryContext();
   const { setActiveTab } = useScratchPadContext();
-  const [loading, setLoading] = useState(false);
+  const { setLoading } = useSessionContext();
   const [scratchPadLoading, setScratchPadLoading] = useState(false);
   const [code, setCode] = useState("");
   const [projectDirectory, setProjectDirectory] = useState("");
@@ -112,11 +112,8 @@ export const CodeCompletionContextWrapper = (props: any) => {
   const value = {
     handleCodeChatMutation,
     useCodeCompletion,
-    loading,
-    setLoading,
     code,
     setCode,
-
     scratchPadLoading,
     searchResults,
   };
@@ -130,11 +127,8 @@ export const CodeCompletionContextWrapper = (props: any) => {
 export const CodeCompletionContext = createContext({
   handleCodeChatMutation: {} as any,
   useCodeCompletion: {} as any,
-  loading: false,
-  setLoading: (value: boolean) => {},
   code: "",
   setCode: (value: string) => {},
-
   scratchPadLoading: false,
   searchResults: [],
 });

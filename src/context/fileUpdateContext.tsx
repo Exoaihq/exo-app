@@ -1,15 +1,15 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { fileUpload } from "../api";
-import { useCodeCompletionContext } from "./codeCompletionContext";
 import { useSessionContext } from "./sessionContext";
 
 export type ActiveTab = "Scratch Pad" | "Repos" | "Chat";
 
 export const FileUploadContextWrapper = (props: any) => {
   const { session, baseApiUrl, sessionId } = useSessionContext();
-  const { loading, setLoading } = useCodeCompletionContext();
+  const { loading, setLoading } = useSessionContext();
   const [selectedFile, setSelectedFile] = useState<File>(null);
   const [newFile, setNewFile] = useState(false);
   const [content, setContent] = useState("");
@@ -28,6 +28,7 @@ export const FileUploadContextWrapper = (props: any) => {
     },
     onSettled: () => {
       setLoading(false);
+      setSelectedFile(null);
     },
   });
 

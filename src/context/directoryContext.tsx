@@ -1,20 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import {
   createDirectory,
-  getDirectories,
   createFiles,
-  GetDirectoriesRequest,
+  getDirectories,
   GetDirectoriesResponseObject,
 } from "../api";
 import { useSessionContext } from "./sessionContext";
 
 export const DirectoryContextWrapper = (props: any) => {
   const queryClient = useQueryClient();
-  const { session, baseApiUrl, sessionId } = useSessionContext();
+  const { session, baseApiUrl, sessionId, setLoading } = useSessionContext();
   const [toastOpen, setToast] = useState(false);
   const [directoryToIndex, setDirectoryToIndex] =
     useState<GetDirectoriesResponseObject | null>(null);
@@ -47,7 +46,9 @@ export const DirectoryContextWrapper = (props: any) => {
     onError(error: Error) {
       console.log(error);
     },
-    onSettled: () => {},
+    onSettled: () => {
+      setLoading(false);
+    },
   });
 
   function handleAddRepo() {
