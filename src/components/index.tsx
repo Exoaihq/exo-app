@@ -27,6 +27,7 @@ declare global {
         directory: GetDirectoriesResponseObject
       ) => Promise<FilePathAndContent[]>;
       selectFolder: () => Promise<string>;
+      reload: () => Promise<void>;
     };
   }
 }

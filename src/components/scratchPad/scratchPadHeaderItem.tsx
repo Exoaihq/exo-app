@@ -12,7 +12,7 @@ function ScratchPadHeaderItem({
   const { activeTab } = useScratchPadContext();
   const itemClass =
     activeTab === name
-      ? "inline-flex p-4 border-b-2 border-transparent rounded-t-lg active dark:text-primary-700 dark:border-primary-700 group"
+      ? "inline-flex p-4 border-b-2 border-transparent rounded-t-lg active dark:text-primary-700 group bg-gray-200"
       : "inline-flex p-4 border-b-2 border-transparent rounded-t-lg hover:text-primary-700 hover:border-primary-700 dark:hover:text-primary-700 group";
 
   return (

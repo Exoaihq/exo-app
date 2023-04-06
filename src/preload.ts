@@ -21,4 +21,5 @@ contextBridge.exposeInMainWorld("api", {
     await ipcRenderer.invoke("get-directories", response),
 
   selectFolder: () => ipcRenderer.invoke("dialog:openDirectory"),
+  reload: () => ipcRenderer.invoke("reload"),
 });

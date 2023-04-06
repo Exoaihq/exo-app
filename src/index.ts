@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain } from "electron";
+import { app, BrowserWindow, dialog, globalShortcut, ipcMain } from "electron";
 import { OpenAiResponseAndMetadata } from "./api/codeCompletion";
 
 import todesktop from "@todesktop/runtime";
@@ -68,6 +68,10 @@ const createWindow = (): void => {
     }
   });
 
+  ipcMain.handle("reload", function () {
+    mainWindow.reload();
+  });
+
   const parentDirectory = getRootParentDirectory(process.cwd());
   console.log(parentDirectory);
 
@@ -87,10 +91,6 @@ const createWindow = (): void => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
-  setTimeout(() => {
-    console.log("ready");
-  }, 1000);
-
   createWindow();
 });
 

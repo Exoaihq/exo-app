@@ -70,7 +70,7 @@ function SavedRepoItem({
           <div className="flex flex-wrap items-center mb-4 -mx-3">
             <div className="w-9/12 max-w-full px-3 flex-0">
               <h5 className="z-10 mb-1 text-transparent bg-clip-text bg-gradient-to-tl from-primary-700 to-primary-500">
-                <a href="javascript:;" className="text-transparent">
+                <a href="" className="text-transparent">
                   {directory.directory_name}
                 </a>
               </h5>
@@ -89,7 +89,7 @@ function SavedRepoItem({
                     <li className="relative">
                       <a
                         className="py-1.2 lg:ease-soft clear-both block w-full whitespace-nowrap rounded-lg px-4 font-normal text-slate-500 transition-colors hover:bg-gray-200 hover:text-slate-700 focus:bg-gray-200 focus:text-slate-700 dark:hover:bg-gray-200/80 dark:hover:text-slate-700 lg:duration-300"
-                        href="javascript:;"
+                        href=""
                       >
                         Refresh
                       </a>
@@ -101,7 +101,7 @@ function SavedRepoItem({
                     <li className="relative">
                       <a
                         className="py-1.2 text-danger lg:ease-soft clear-both block w-full whitespace-nowrap rounded-lg px-4 font-normal text-red-600 transition-colors hover:bg-gray-200 focus:bg-gray-200 dark:hover:bg-gray-200/80 lg:duration-300"
-                        href="javascript:;"
+                        href=""
                       >
                         Remove Repo
                       </a>

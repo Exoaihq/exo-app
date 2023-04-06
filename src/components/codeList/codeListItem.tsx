@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { useFileUploadContext } from "../../context/fileUpdateContext";
-import {
-  formatTimeStampToHumanReadableShortDateTime,
-  formatTimeStampToHumanReadableTime,
-} from "../../hooks/parseTimeStamp";
+import { formatTimeStampToHumanReadableTime } from "../../hooks/parseTimeStamp";
 import Divider from "../divider";
 import { ChevronDownIcon, ChevronUpIcon } from "../icons";
 import LoadingIndicator from "../scratchPad/completedCode.tsx/loadingIndicator";

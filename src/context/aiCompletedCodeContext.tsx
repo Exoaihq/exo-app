@@ -1,6 +1,10 @@
-import { createContext, useContext } from "react";
-import { useQuery } from "react-query";
-import { getAiCompletedCode, GetAiCompletedCodeResponseObject } from "../api";
+import { createContext, useContext, useEffect } from "react";
+import { useMutation, useQuery } from "react-query";
+import {
+  getAiCompletedCode,
+  GetAiCompletedCodeResponseObject,
+  updateAiCompletedCode,
+} from "../api";
 import { useSessionContext } from "./sessionContext";
 
 export const AiCompletedCodeContextWrapper = (props: any) => {
@@ -12,9 +16,53 @@ export const AiCompletedCodeContextWrapper = (props: any) => {
     refetchInterval: 10000,
   });
 
+  const useUpdateAiCodeMutation = useMutation(updateAiCompletedCode, {
+    onSuccess: async (res) => {},
+    onError(error: Error) {
+      console.log(error);
+    },
+    onSettled: () => {},
+  });
+
   const value = {
     data,
   };
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      console.log(data);
+
+      data.forEach((code: GetAiCompletedCodeResponseObject) => {
+        const { location, writen_to_file_at, file_name, path } = code;
+
+        if (file_name && path && !writen_to_file_at) {
+          window.api
+            .createOrUpdateFile({
+              completedCode: code.code,
+              metadata: {
+                projectDirectory: path + "/" + file_name,
+                newFile: false,
+                projectFile: "",
+                requiredFunctionality: "",
+              },
+              choices: [],
+            })
+            .then((res) => {
+              useUpdateAiCodeMutation.mutate({
+                session,
+                baseApiUrl,
+                sessionId,
+                id: code.id,
+                values: {
+                  writen_to_file_at: new Date().toISOString(),
+                },
+              });
+            });
+        }
+      });
+    }
+  }, [data]);
+
   return (
     <AiCompletedCodeContext.Provider value={value}>
       {props.children}

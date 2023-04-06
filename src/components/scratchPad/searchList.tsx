@@ -1,3 +1,4 @@
+// tsx
 import { useCodeCompletionContext } from "../../context";
 import SearchListItem from "../searchList/searchListItem";
 
