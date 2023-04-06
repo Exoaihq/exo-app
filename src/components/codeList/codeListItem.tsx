@@ -1,22 +1,27 @@
 import { useState } from "react";
 import { useFileUploadContext } from "../../context/fileUpdateContext";
-import { formatTimeStampToHumanReadableShortDateTime } from "../../hooks/parseTimeStamp";
+import {
+  formatTimeStampToHumanReadableShortDateTime,
+  formatTimeStampToHumanReadableTime,
+} from "../../hooks/parseTimeStamp";
 import Divider from "../divider";
 import { ChevronDownIcon, ChevronUpIcon } from "../icons";
+import LoadingIndicator from "../scratchPad/completedCode.tsx/loadingIndicator";
 
 export interface CodeListItemProps {
   date: string;
   title: string;
   code: string;
+  completed: string | null;
   index: number;
   filePath?: string;
   fileName?: string;
 }
 
 const CodeListItem = (props: CodeListItemProps) => {
-  const [showCode, setShowCode] = useState(props.index === 0 ? true : false);
+  const [showCode, setShowCode] = useState(false);
   const { handleGetFile } = useFileUploadContext();
-  const { date, title, code } = props;
+  const { date, title, code, completed } = props;
 
   function toggle() {
     setShowCode(!showCode);
@@ -24,39 +29,48 @@ const CodeListItem = (props: CodeListItemProps) => {
 
   function truncateText(text: string) {
     if (!text) return "";
-    return text.length > 20 ? text.substring(0, 20) + "..." : text;
+    return text.length > 100 ? text.substring(0, 100) + "..." : text;
   }
 
   return (
-    <div>
-      <button
-        onClick={() =>
-          handleGetFile(
-            props.filePath ? props.filePath + "/" + props.fileName : ""
-          )
-        }
-        className="p-3 mt-4 rounded-lg bg-blue-500 text-gray-200 inline-flex items-center gap-2 justify-center hover:text-gray-600 hover:bg-blue-300 "
-      >
-        Select
-      </button>
-      <p className="text-sm">
-        {formatTimeStampToHumanReadableShortDateTime(date)}
-      </p>
-      <div className="flex flex-row space-between">
-        <p className="grow">{truncateText(title)}</p>
-        <button onClick={toggle} className={"basis-1/4"}>
-          {showCode ? (
-            <ChevronUpIcon className={"w-6 h-6"} />
-          ) : (
-            <ChevronDownIcon className={"w-6 h-6"} />
-          )}
-        </button>
+    <div className="p-2" onClick={toggle}>
+      <div className="flex">
+        <div className="flex-auto px-4 py-2 ">
+          <p className="grow">{truncateText(title)}</p>
+          <div className="flex gap-3 items-center leading-normal text-sm opacity-60">
+            <small>{formatTimeStampToHumanReadableTime(date)}</small>
+            {props.fileName && props.filePath && (
+              <button
+                onClick={() =>
+                  handleGetFile(
+                    props.filePath ? props.filePath + "/" + props.fileName : ""
+                  )
+                }
+                className="p-2 rounded-lg bg-primary-700 text-gray-200 inline-flex items-center gap-2 justify-center hover:text-gray-600 hover:bg-blue-300 "
+              >
+                Select
+              </button>
+            )}
+            {!completed && <LoadingIndicator />}
+          </div>
+        </div>
+        {completed && (
+          <button className={"basis-1/4"}>
+            {showCode ? (
+              <ChevronUpIcon className={"w-6 h-6"} />
+            ) : (
+              <ChevronDownIcon className={"w-6 h-6"} />
+            )}
+          </button>
+        )}
       </div>
-      <Divider />
 
-      <pre hidden={!showCode} className="flex bg-slate-100 rounded-lg p-4 mb-4">
-        {code}
-      </pre>
+      <Divider />
+      <div hidden={!showCode}>
+        <pre className="flex bg-slate-100 rounded-lg p-4 mb-4 max-w-fit">
+          {code}
+        </pre>
+      </div>
     </div>
   );
 };

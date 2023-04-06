@@ -35,7 +35,7 @@ function ScratchPadContainer() {
   }, [history]);
 
   return (
-    <div className="relative w-full p-6 h-[40rem] overflow-auto">
+    <div className="relative w-full p-6 h-[50rem] overflow-auto bg-gray-200">
       {activeTab === "Scratch Pad" && <ScatchPadTab />}
       {activeTab === "Repos" && <DirectoryTab />}
     </div>

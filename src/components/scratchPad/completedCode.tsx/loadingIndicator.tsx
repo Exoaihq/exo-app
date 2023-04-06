@@ -11,7 +11,7 @@ function LoadingIndicator() {
         />
         <span className="sr-only">Loading...</span>
       </div>
-      Running your command
+      Preparing to write your code
     </div>
   );
 }

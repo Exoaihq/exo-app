@@ -9,6 +9,7 @@ import { useScratchPadContext } from "./scratchPadContext";
 
 import { useSessionContext } from "./sessionContext";
 import { useFileUploadContext } from "./fileUpdateContext";
+import { SearchListItemProps } from "../components/searchList/searchListItem";
 
 export const CodeCompletionContextWrapper = (props: any) => {
   const queryClient = useQueryClient();
@@ -21,10 +22,11 @@ export const CodeCompletionContextWrapper = (props: any) => {
   const [code, setCode] = useState("");
   const [projectDirectory, setProjectDirectory] = useState("");
 
-  const [searchResults, setSearchResults] = useState<any>();
+  const [searchResults, setSearchResults] = useState<SearchListItemProps[]>([]);
 
   const useCodeCompletion = useMutation(codeCompletion, {
     onSuccess: async (res) => {
+      setActiveTab("Scratch Pad");
       setShowFileSection(true);
       queryClient.invalidateQueries("messages");
       queryClient.invalidateQueries("ai-completed-code");
@@ -35,7 +37,6 @@ export const CodeCompletionContextWrapper = (props: any) => {
       setScratchPadLoading(false);
 
       if (search) {
-        setActiveTab("Scratch Pad");
         setSearchResults(search);
       }
 

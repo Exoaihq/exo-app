@@ -79,6 +79,7 @@ export const DirectoryContextWrapper = (props: any) => {
       baseApiUrl,
       sessionId,
       files: res,
+      directoryId: directoryToIndex.id,
     });
     setToast(false);
     setIndexingLoading(true);
@@ -130,7 +131,6 @@ export const DirectoryContext = createContext({
   handleIndexRepo: (directory: any) => {},
   directoryToIndex: null,
   submitIndexRepo: () => {},
-
   showFileSection: false,
   setShowFileSection: (showFileSection: boolean) => {},
   indexingLoading: false,

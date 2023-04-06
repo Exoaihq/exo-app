@@ -36,7 +36,7 @@ export async function createFileFromResponse(
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    height: 1000,
+    height: 1200,
     width: 1200,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,

@@ -9,7 +9,7 @@ export const AiCompletedCodeContextWrapper = (props: any) => {
     queryKey: "ai-completed-code",
     queryFn: () => getAiCompletedCode({ session, baseApiUrl, sessionId }),
     enabled: !!session,
-    refetchInterval: 600000,
+    refetchInterval: 10000,
   });
 
   const value = {

@@ -51,7 +51,6 @@ export const FileUploadContextWrapper = (props: any) => {
     console.log(fullpath);
 
     const res = await window.api.getFile(fullpath);
-    console.log(res);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     setSelectedFile({ path: fullpath });

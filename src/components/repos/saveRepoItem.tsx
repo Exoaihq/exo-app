@@ -2,7 +2,12 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { GetDirectoriesResponseObject } from "../../api";
 import { useDirectoryContext } from "../../context";
 import { formatTimeStampToHumanReadableShortDateTime } from "../../hooks/parseTimeStamp";
-import { FourDots, LoadingSpinnerIcon } from "../icons";
+import {
+  FourDots,
+  LoadingSpinnerIcon,
+  RefreshIcon,
+  UpArrowOnPaperIcon,
+} from "../icons";
 import SimpleToast from "../toast/toast";
 
 function SavedRepoItem({
@@ -61,7 +66,7 @@ function SavedRepoItem({
   return (
     <Fragment key={directory.id}>
       {directory && directory.saved && (
-        <div className="flex-auto p-6 pb-0 bg-gray-100">
+        <div className="flex-auto p-6 pb-0 bg-white">
           <div className="flex flex-wrap items-center mb-4 -mx-3">
             <div className="w-9/12 max-w-full px-3 flex-0">
               <h5 className="z-10 mb-1 text-transparent bg-clip-text bg-gradient-to-tl from-primary-700 to-primary-500">
@@ -124,35 +129,41 @@ function SavedRepoItem({
               />
             </div>
           )}
-          <ul className="pl-0 mx-auto mb-4 list-none">
-            <li className="flex">
-              {directory.indexed_at && (
-                <p className="font-light mr-2">
-                  {`Indexed: ${formatTimeStampToHumanReadableShortDateTime(
-                    directory.indexed_at
-                  )}`}
-                </p>
-              )}
-              <Fragment>
-                {indexingLoading ? (
-                  <LoadingSpinnerIcon
-                    className={
-                      "w-4 h- mr-2 text-primary-700 animate-spin dark:text-gray-600 fill-primary-700"
-                    }
-                  />
-                ) : (
-                  <button
-                    onClick={() => {
-                      handleIndexRepo(directory);
-                    }}
-                    className="py-2.2 px-3.6 text-xs rounded-1.8 inline-block whitespace-nowrap ml-auto bg-[#e4e8ed] text-center align-baseline font-bold uppercase leading-none text-[#5974a2]"
-                  >
+
+          <div className="flex m-1">
+            {directory.indexed_at && (
+              <p className="font-light mr-2">
+                {`Indexed: ${formatTimeStampToHumanReadableShortDateTime(
+                  directory.indexed_at
+                )}`}
+              </p>
+            )}
+            <Fragment>
+              {indexingLoading && directory.id === directoryToIndex.id ? (
+                <LoadingSpinnerIcon
+                  className={
+                    "w-4 h- mr-2 text-primary-700 animate-spin dark:text-gray-600 fill-primary-700"
+                  }
+                />
+              ) : (
+                <button
+                  onClick={() => {
+                    handleIndexRepo(directory);
+                  }}
+                  className="py-2.2 px-3.6 text-xs rounded-1.8 inline-block whitespace-nowrap ml-auto bg-[#e4e8ed] text-center align-baseline font-bold uppercase leading-none text-[#5974a2]"
+                >
+                  {directory.indexed_at ? (
+                    <RefreshIcon className="w-3 h-3" />
+                  ) : (
+                    <UpArrowOnPaperIcon className="w-3 h-3" />
+                  )}
+                  <span className="ml-1">
                     {directory.indexed_at ? "Refresh" : "Index"}
-                  </button>
-                )}
-              </Fragment>
-            </li>
-          </ul>
+                  </span>
+                </button>
+              )}
+            </Fragment>
+          </div>
         </div>
       )}
     </Fragment>

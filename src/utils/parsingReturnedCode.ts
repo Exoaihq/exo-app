@@ -49,3 +49,12 @@ export const parseReturnedCode = (
 export function textIncludeScratchPad(text: string) {
   return text.toLowerCase().includes("scratch");
 }
+
+export function decimalToPercentage(decimal: number): string {
+  if (decimal < 0 || decimal > 1) {
+    throw new Error("Decimal value must be between 0 and 1");
+  }
+
+  const percentage = decimal * 100;
+  return percentage.toFixed(2) + "%";
+}
