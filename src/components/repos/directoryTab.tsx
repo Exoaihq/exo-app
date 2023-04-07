@@ -8,7 +8,8 @@ import { PlusIcon } from "../icons";
 import SavedRepoItem from "./saveRepoItem";
 
 function DirectoryTab() {
-  const { directories, handleAddRepo, setRepo, repo } = useDirectoryContext();
+  const { directories, handleAddRepo, setRepo, repo, handleAddNewFile } =
+    useDirectoryContext();
 
   const { newFile, selectedFile, setSelectedFile, handleGetFile } =
     useFileUploadContext();
@@ -74,16 +75,29 @@ function DirectoryTab() {
         value={repo || selectedFile?.path || ""}
         onChange={(event) => setRepo(event.target.value)}
       />
-      {(selectedFile || repo) && (
-        <button
-          disabled={repo === "" && !selectedFile}
-          onClick={handleAddRepoOrFile}
-          className="p-2 mt-4 rounded-lg bg-primary-500 text-gray-200 inline-flex items-center gap-2 justify-center hover:text-gray-600 hover:bg-primary-300 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <PlusIcon className="w-4 h-4" />
-          Add {selectedFile ? "File" : "Repo"}
-        </button>
-      )}
+      <div className="flex flex-row">
+        {(selectedFile || repo) && (
+          <button
+            disabled={repo === "" && !selectedFile}
+            onClick={handleAddRepoOrFile}
+            className="p-2 mt-4 rounded-lg bg-primary-500 text-gray-200 inline-flex items-center gap-2 justify-center hover:text-gray-600 hover:bg-primary-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <PlusIcon className="w-4 h-4" />
+            Add {selectedFile ? "File" : "Repo"}
+          </button>
+        )}
+        {repo && <p className="mt-4 ml-4 mr-4">or</p>}
+        {repo && (
+          <div>
+            <button
+              onClick={() => handleAddNewFile(repo)}
+              className="p-2 mt-4 rounded-lg bg-primary-500 text-gray-200 inline-flex items-center gap-2 justify-center hover:text-gray-600 hover:bg-primary-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <PlusIcon className="w-4 h-4" /> Add new file
+            </button>
+          </div>
+        )}
+      </div>
       <h3 className="mt-20">Saved Repos</h3>
 
       <Divider />

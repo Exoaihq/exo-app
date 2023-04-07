@@ -8,6 +8,7 @@ import {
   createFiles,
   getDirectories,
   GetDirectoriesResponseObject,
+  updateDirectoryToAddFileTo,
 } from "../api";
 import { useSessionContext } from "./sessionContext";
 
@@ -19,6 +20,7 @@ export const DirectoryContextWrapper = (props: any) => {
     useState<GetDirectoriesResponseObject | null>(null);
 
   const [repo, setRepo] = useState("");
+  const [repoToAddFile, setSetRepoToAddFile] = useState("");
 
   const [showFileSection, setShowFileSection] = useState(false);
   const [indexingLoading, setIndexingLoading] = useState(false);
@@ -26,6 +28,18 @@ export const DirectoryContextWrapper = (props: any) => {
   function toggleToast() {
     setToast(!toastOpen);
   }
+
+  const useAddNewFileMutation = useMutation(updateDirectoryToAddFileTo, {
+    onSuccess: async (res) => {
+      queryClient.invalidateQueries("messages");
+    },
+    onError(error: Error) {
+      console.log(error);
+    },
+    onSettled: () => {
+      setIndexingLoading(false);
+    },
+  });
 
   const useCreateFilesMutation = useMutation(createFiles, {
     onSuccess: async (res) => {
@@ -92,6 +106,18 @@ export const DirectoryContextWrapper = (props: any) => {
     enabled: !!session,
   });
 
+  function handleAddNewFile(selectedRepo: string) {
+    setSetRepoToAddFile(selectedRepo);
+    console.log("add new file", selectedRepo);
+
+    useAddNewFileMutation.mutate({
+      session,
+      baseApiUrl,
+      sessionId,
+      directory: selectedRepo,
+    });
+  }
+
   // useEffect(() => {
   //   if (!repo && data && data.length > 0) {
   //     setRepo(data[0].file_path);
@@ -109,7 +135,7 @@ export const DirectoryContextWrapper = (props: any) => {
     handleIndexRepo,
     directoryToIndex,
     submitIndexRepo,
-
+    handleAddNewFile,
     showFileSection,
     setShowFileSection,
     indexingLoading,
@@ -134,6 +160,7 @@ export const DirectoryContext = createContext({
   showFileSection: false,
   setShowFileSection: (showFileSection: boolean) => {},
   indexingLoading: false,
+  handleAddNewFile: (addFileDirectrory: string) => {},
 });
 
 export const useDirectoryContext = () => useContext(DirectoryContext);

@@ -89,3 +89,37 @@ export function createDirectory(
       throw new Error(err);
     });
 }
+
+export function updateDirectoryToAddFileTo(
+  req: CreateDirectoryRequest
+): Promise<GetDirectoriesResponseObject[]> {
+  const request = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      access_token: req.session?.access_token,
+      refresh_token: req.session?.refresh_token,
+      session_id: req.sessionId,
+    },
+    url: req.baseApiUrl + "/code-directory/add-file",
+    body: JSON.stringify({
+      directory: req.directory,
+      sessionId: req.sessionId,
+    }),
+  };
+
+  return fetch(request.url, request)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      }
+      return res.json();
+    })
+    .then((res: GetDirectoriesResponse) => {
+      const { data } = res;
+      return data;
+    })
+    .catch((err) => {
+      throw new Error(err);
+    });
+}

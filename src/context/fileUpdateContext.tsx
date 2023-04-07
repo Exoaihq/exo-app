@@ -48,8 +48,6 @@ export const FileUploadContextWrapper = (props: any) => {
   };
 
   async function handleGetFile(fullpath: string) {
-    console.log(fullpath);
-
     const res = await window.api.getFile(fullpath);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
