@@ -30,7 +30,7 @@ const CodeListItem = (props: CodeListItemProps) => {
   }
 
   return (
-    <div className="p-2" onClick={toggle}>
+    <div className="p-2">
       <div className="flex">
         <div className="flex-auto px-4 py-2 ">
           <p className="grow">{truncateText(title)}</p>
@@ -52,7 +52,7 @@ const CodeListItem = (props: CodeListItemProps) => {
           </div>
         </div>
         {completed && (
-          <button className={"basis-1/4"}>
+          <button className={"basis-1/4"} onClick={toggle}>
             {showCode ? (
               <ChevronUpIcon className={"w-6 h-6"} />
             ) : (

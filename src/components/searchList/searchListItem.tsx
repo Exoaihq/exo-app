@@ -60,7 +60,10 @@ function Card({
         </button>
       )}
       <div className="grow mt-1">
-        <h5 className="text ">{file_name}</h5>
+        <div className="flex flex-row space-x-1">
+          <h5 className="grow ">{file_name}</h5>
+          <p>{relative_file_path}</p>
+        </div>
         <div className="flex flex-row">
           <p className="basis-1/4">{similarity}</p>
           <p className="grow">Type: {parsed_code_type}</p>

@@ -14,7 +14,8 @@ import { SearchListItemProps } from "../components/searchList/searchListItem";
 export const CodeCompletionContextWrapper = (props: any) => {
   const queryClient = useQueryClient();
   const { session, baseApiUrl, sessionId } = useSessionContext();
-  const { content, selectedFile } = useFileUploadContext();
+  const { content, selectedFile, setSelectedFile, setContent } =
+    useFileUploadContext();
   const { setShowFileSection } = useDirectoryContext();
   const { setActiveTab } = useScratchPadContext();
   const { setLoading } = useSessionContext();
@@ -35,6 +36,8 @@ export const CodeCompletionContextWrapper = (props: any) => {
 
       setLoading(false);
       setScratchPadLoading(false);
+      setSelectedFile(null);
+      setContent("");
 
       if (search) {
         setSearchResults(search);

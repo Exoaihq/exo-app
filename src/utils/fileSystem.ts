@@ -107,6 +107,17 @@ const foldersToExclude = [
   "logs",
   "Downloads",
   "Accounts",
+  "cache",
+  "trace",
+  "chunks",
+  "webpack",
+  ".code-search",
+  "bower_components",
+  "hot-update",
+  ".npmrc",
+  ".prettierignore",
+  "development",
+  ".next",
 ];
 
 const filesToExcule = [
@@ -125,6 +136,30 @@ const filesToExcule = [
   ".svg",
   ".ico",
   ".pdf",
+  ".woff",
+  ".woff2",
+  ".ttf",
+  ".eot",
+  ".otf",
+  ".txt",
+  "_error.js",
+  "_buildManifest.js",
+  "_ssgManifest.js",
+  "polyfills.js",
+  "react-refresh.js",
+  "webpack.js",
+  "build-manifest.json",
+  "react-loadable-manifest.json",
+  ".CVS",
+  "amp.js",
+  "amp.js.map",
+  ".hot-update.js",
+  ".prettierrc.js",
+  "jest.config.js",
+  "jest.setup.js",
+  "next-env.d.ts",
+  "next-sitemap.config.js",
+  "next.config.js",
 ];
 
 function doesPathContainFolderToExclude(path: string): boolean {
@@ -164,7 +199,7 @@ async function dirIt(
         }
       } else {
         if (doesPathContainFolderToExclude(path)) {
-          // console.log("Skipping >>>>>>>>>>>>>>>>>>", filePath);
+          console.log("Skipping >>>>>>>>>>>>>>>>>>", path);
         } else {
           dirs.push(fullPath);
         }

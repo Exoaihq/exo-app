@@ -23,7 +23,7 @@ export const DirectoryContextWrapper = (props: any) => {
   const [repoToAddFile, setSetRepoToAddFile] = useState("");
 
   const [showFileSection, setShowFileSection] = useState(false);
-  const [indexingLoading, setIndexingLoading] = useState(false);
+  const [indexingLoadingId, setIndexingLoadingId] = useState(null);
 
   function toggleToast() {
     setToast(!toastOpen);
@@ -37,20 +37,19 @@ export const DirectoryContextWrapper = (props: any) => {
       console.log(error);
     },
     onSettled: () => {
-      setIndexingLoading(false);
+      setIndexingLoadingId(null);
     },
   });
 
   const useCreateFilesMutation = useMutation(createFiles, {
     onSuccess: async (res) => {
       queryClient.invalidateQueries("directory");
+      queryClient.invalidateQueries("messages");
     },
     onError(error: Error) {
       console.log(error);
     },
-    onSettled: () => {
-      setIndexingLoading(false);
-    },
+    onSettled: () => {},
   });
 
   const useCreateRepoMutation = useMutation(createDirectory, {
@@ -96,7 +95,7 @@ export const DirectoryContextWrapper = (props: any) => {
       directoryId: directoryToIndex.id,
     });
     setToast(false);
-    setIndexingLoading(true);
+    setIndexingLoadingId(directoryToIndex.id);
     console.log(res);
   }
 
@@ -138,7 +137,7 @@ export const DirectoryContextWrapper = (props: any) => {
     handleAddNewFile,
     showFileSection,
     setShowFileSection,
-    indexingLoading,
+    indexingLoadingId,
   };
   return (
     <DirectoryContext.Provider value={value}>
@@ -159,7 +158,7 @@ export const DirectoryContext = createContext({
   submitIndexRepo: () => {},
   showFileSection: false,
   setShowFileSection: (showFileSection: boolean) => {},
-  indexingLoading: false,
+  indexingLoadingId: null,
   handleAddNewFile: (addFileDirectrory: string) => {},
 });
 

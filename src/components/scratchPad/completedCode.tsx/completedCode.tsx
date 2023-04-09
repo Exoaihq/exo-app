@@ -10,6 +10,7 @@ const CompletedCode = ({
 }) => {
   return (
     <CodeListItem
+      key={key}
       date={data.created_at}
       completed={data.completed_at}
       title={data.functionality}

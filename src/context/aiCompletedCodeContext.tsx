@@ -35,7 +35,7 @@ export const AiCompletedCodeContextWrapper = (props: any) => {
       data.forEach((code: GetAiCompletedCodeResponseObject) => {
         const { location, writen_to_file_at, file_name, path } = code;
 
-        if (file_name && path && !writen_to_file_at) {
+        if (code.code && file_name && path && !writen_to_file_at) {
           window.api
             .createOrUpdateFile({
               completedCode: code.code,

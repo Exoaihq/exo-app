@@ -17,7 +17,7 @@ function SavedRepoItem({
 }) {
   const {
     handleIndexRepo,
-    indexingLoading,
+    indexingLoadingId,
     setToast,
     toastOpen,
     directoryToIndex,
@@ -145,7 +145,7 @@ function SavedRepoItem({
               </p>
             )}
             <Fragment>
-              {indexingLoading && directory.id === directoryToIndex.id ? (
+              {indexingLoadingId === directory.id && !directory.indexed_at ? (
                 <LoadingSpinnerIcon
                   className={
                     "w-4 h- mr-2 text-primary-700 animate-spin dark:text-gray-600 fill-primary-700"
