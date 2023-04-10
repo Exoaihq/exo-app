@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { createContext, useContext, useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import { textIncludeScratchPad } from "../utils/parsingReturnedCode";
+import { createContext, useContext, useState } from "react";
+import { useMutation, useQueryClient } from "react-query";
 import { codeCompletion } from "../api";
+import { textIncludeScratchPad } from "../utils/parsingReturnedCode";
 import { useDirectoryContext } from "./directoryContext";
 import { useScratchPadContext } from "./scratchPadContext";
 
-import { useSessionContext } from "./sessionContext";
 import { useFileUploadContext } from "./fileUpdateContext";
-import { SearchListItemProps } from "../components/searchList/searchListItem";
+import { useSearchContext } from "./searchContext";
+import { useSessionContext } from "./sessionContext";
 
 export const CodeCompletionContextWrapper = (props: any) => {
   const queryClient = useQueryClient();
@@ -22,8 +22,9 @@ export const CodeCompletionContextWrapper = (props: any) => {
   const [scratchPadLoading, setScratchPadLoading] = useState(false);
   const [code, setCode] = useState("");
   const [projectDirectory, setProjectDirectory] = useState("");
+  const { setSearchResults, setSearchPhrase } = useSearchContext();
 
-  const [searchResults, setSearchResults] = useState<SearchListItemProps[]>([]);
+  const [scratchPadContent, setScratchPadContent] = useState("");
 
   const useCodeCompletion = useMutation(codeCompletion, {
     onSuccess: async (res) => {
@@ -41,6 +42,7 @@ export const CodeCompletionContextWrapper = (props: any) => {
 
       if (search) {
         setSearchResults(search);
+        setActiveTab("Search");
       }
 
       if (newFile) {
@@ -91,10 +93,6 @@ export const CodeCompletionContextWrapper = (props: any) => {
     if (textIncludeScratchPad(projectDirectory) && code) {
       newCode = code;
     }
-    // const newHistory = [
-    //   ...history,
-    //   { role: ChatUserType.user, content: value },
-    // ];
 
     useCodeCompletion.mutate({
       baseApiUrl,
@@ -102,16 +100,9 @@ export const CodeCompletionContextWrapper = (props: any) => {
       codeContent: newCode,
       fullFilePathWithName: selectedFile ? selectedFile.path : "",
       sessionId,
+      scratchPadContent,
     });
   };
-
-  // useEffect(() => {
-  //   if (loading) {
-  //     setTimeout(() => {
-  //       setScratchPadLoading(true);
-  //     }, 5000);
-  //   }
-  // }, [loading]);
 
   const value = {
     handleCodeChatMutation,
@@ -119,7 +110,8 @@ export const CodeCompletionContextWrapper = (props: any) => {
     code,
     setCode,
     scratchPadLoading,
-    searchResults,
+    scratchPadValue: scratchPadContent,
+    setScratchPadValue: setScratchPadContent,
   };
   return (
     <CodeCompletionContext.Provider value={value}>
@@ -134,7 +126,8 @@ export const CodeCompletionContext = createContext({
   code: "",
   setCode: (value: string) => {},
   scratchPadLoading: false,
-  searchResults: [],
+  scratchPadValue: "",
+  setScratchPadValue: (value: string) => {},
 });
 
 export const useCodeCompletionContext = () => useContext(CodeCompletionContext);

@@ -49,7 +49,6 @@ function Card({
         selectedFile?.path === fullPath ? "bg-primary-500" : "bg-white"
       } shadow-lg p-4 mb-4`}
       data-eid="_task_3_title_id"
-      data-className="rounded-lg"
     >
       {file_name && relative_file_path && (
         <button

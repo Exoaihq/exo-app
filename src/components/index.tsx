@@ -16,6 +16,7 @@ import {
 
 import MainPage from "./MainPage";
 import { FileUploadContextWrapper } from "../context/fileUpdateContext";
+import { SearchContextWrapper } from "../context/searchContext";
 
 declare global {
   interface Window {
@@ -40,13 +41,15 @@ const App = () => {
         <DirectoryContextWrapper>
           <ScratchPadContextWrapper>
             <FileUploadContextWrapper>
-              <CodeCompletionContextWrapper>
-                <AiCompletedCodeContextWrapper>
-                  <MessageContextWrapper>
-                    <MainPage />
-                  </MessageContextWrapper>
-                </AiCompletedCodeContextWrapper>
-              </CodeCompletionContextWrapper>
+              <SearchContextWrapper>
+                <CodeCompletionContextWrapper>
+                  <AiCompletedCodeContextWrapper>
+                    <MessageContextWrapper>
+                      <MainPage />
+                    </MessageContextWrapper>
+                  </AiCompletedCodeContextWrapper>
+                </CodeCompletionContextWrapper>
+              </SearchContextWrapper>
             </FileUploadContextWrapper>
           </ScratchPadContextWrapper>
         </DirectoryContextWrapper>

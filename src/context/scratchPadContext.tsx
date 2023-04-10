@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-export type ActiveTab = "Scratch Pad" | "Repos" | "Chat";
+export type ActiveTab = "Scratch Pad" | "Repos" | "Chat" | "Search";
 
 export const ScratchPadContextWrapper = (props: any) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("Repos");

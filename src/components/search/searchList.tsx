@@ -1,9 +1,9 @@
 // tsx
-import { useCodeCompletionContext } from "../../context";
-import SearchListItem from "../searchList/searchListItem";
+import { useSearchContext } from "../../context/searchContext";
+import SearchListItem from "./searchListItem";
 
 function SearchList() {
-  const { searchResults } = useCodeCompletionContext();
+  const { searchResults } = useSearchContext();
 
   return (
     <div>

@@ -24,6 +24,7 @@ export interface CodeCompletionRequest {
   codeContent: string;
   fullFilePathWithName: string;
   sessionId: string;
+  scratchPadContent?: string;
 }
 
 export interface Choices {
@@ -47,6 +48,7 @@ export function codeCompletion(
       codeContent: req.codeContent,
       fullFilePathWithName: req.fullFilePathWithName,
       sessionId: req.sessionId,
+      scratchPadContent: req.scratchPadContent,
     }),
   };
 

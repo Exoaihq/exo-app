@@ -12,3 +12,4 @@ export * from "./LoadingSpinner";
 export * from "./GreenCheck";
 export * from "./Refresh";
 export * from "./PaperAirplane";
+export * from "./Search";
