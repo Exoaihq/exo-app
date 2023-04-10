@@ -13,3 +13,4 @@ export * from "./GreenCheck";
 export * from "./Refresh";
 export * from "./PaperAirplane";
 export * from "./Search";
+export * from "./Menu";

@@ -6,8 +6,10 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
   createDirectory,
   createFiles,
+  DirectoryMetadata,
   getDirectories,
   GetDirectoriesResponseObject,
+  updateDirectory,
   updateDirectoryToAddFileTo,
 } from "../api";
 import { useSessionContext } from "./sessionContext";
@@ -39,6 +41,17 @@ export const DirectoryContextWrapper = (props: any) => {
     onSettled: () => {
       setIndexingLoadingId(null);
     },
+  });
+
+  const useUpdateDirectory = useMutation(updateDirectory, {
+    onSuccess: async (res) => {
+      queryClient.invalidateQueries("directory");
+      queryClient.invalidateQueries("messages");
+    },
+    onError(error: Error) {
+      console.log(error);
+    },
+    onSettled: () => {},
   });
 
   const useCreateFilesMutation = useMutation(createFiles, {
@@ -76,6 +89,19 @@ export const DirectoryContextWrapper = (props: any) => {
       directory: repo,
     });
     console.log("add repo", repo);
+  }
+
+  function handleRemoveRepo(directoryId: string) {
+    console.log("remove repo");
+    useUpdateDirectory.mutate({
+      session,
+      baseApiUrl,
+      sessionId,
+      directoryId,
+      values: {
+        saved: false,
+      },
+    });
   }
 
   function handleIndexRepo(directory: GetDirectoriesResponseObject) {
@@ -124,7 +150,8 @@ export const DirectoryContextWrapper = (props: any) => {
   // }, [data]);
 
   const value = {
-    directories: data,
+    directories: data?.data,
+    metadata: data?.metadata,
     handleAddRepo,
     repo,
     setRepo,
@@ -138,6 +165,7 @@ export const DirectoryContextWrapper = (props: any) => {
     showFileSection,
     setShowFileSection,
     indexingLoadingId,
+    handleRemoveRepo,
   };
   return (
     <DirectoryContext.Provider value={value}>
@@ -160,6 +188,8 @@ export const DirectoryContext = createContext({
   setShowFileSection: (showFileSection: boolean) => {},
   indexingLoadingId: null,
   handleAddNewFile: (addFileDirectrory: string) => {},
+  handleRemoveRepo: (directoryId: string) => {},
+  metadata: {} as DirectoryMetadata,
 });
 
 export const useDirectoryContext = () => useContext(DirectoryContext);

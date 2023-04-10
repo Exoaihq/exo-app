@@ -44,8 +44,3 @@ export function formatTimeStampToHumanReadableTime(timestamp: string): string {
   // Combine the formatted strings into the final result
   return `${hourStr}:${minuteStr} ${amPm}`;
 }
-
-// Example usage:
-const timestamp = "2023-04-01T14:10:49.73+00:00";
-const formattedDate = formatTimeStampToHumanReadableShortDateTime(timestamp);
-console.log(formattedDate); // Output: 4/1/23 2:10 PM

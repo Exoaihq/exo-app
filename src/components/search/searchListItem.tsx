@@ -61,19 +61,14 @@ function Card({
       <div className="grow mt-1">
         <div className="flex flex-row space-x-1">
           <h5 className="grow ">{file_name}</h5>
-          <p>{relative_file_path}</p>
         </div>
+        <p>{relative_file_path}</p>
         <div className="flex flex-row">
           <p className="basis-1/4">{similarity}</p>
           <p className="grow">Type: {parsed_code_type}</p>
         </div>
       </div>
       <div className="flex">
-        <div>
-          {" "}
-          <i className="fa fa-paperclip mr-1 text-sm" aria-hidden="true"></i>
-          <span className="text-sm">{created_at}</span>
-        </div>
         <div className="ml-auto">
           <button className={"basis-1/4"}>
             {showCode ? (

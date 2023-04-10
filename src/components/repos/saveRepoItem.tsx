@@ -1,14 +1,15 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useState } from "react";
 import { GetDirectoriesResponseObject } from "../../api";
 import { useDirectoryContext } from "../../context";
 import { formatTimeStampToHumanReadableShortDateTime } from "../../hooks/parseTimeStamp";
 import {
-  FourDots,
   LoadingSpinnerIcon,
+  MenuIcon,
   RefreshIcon,
   UpArrowOnPaperIcon,
 } from "../icons";
 import SimpleToast from "../toast/toast";
+import SavedRepoMenu from "./savedRepoMenu";
 
 function SavedRepoItem({
   directory,
@@ -23,16 +24,11 @@ function SavedRepoItem({
     directoryToIndex,
     submitIndexRepo,
     handleAddNewFile,
+    handleRemoveRepo,
+    metadata,
   } = useDirectoryContext();
 
   const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-
-  const handleClickOutside = (event: { target: any }) => {
-    if (ref.current && !ref.current.contains(event.target)) {
-      setOpen(false);
-    }
-  };
 
   function getIndexMessageTitle() {
     if (!directoryToIndex) {
@@ -56,65 +52,71 @@ function SavedRepoItem({
     }`;
   }
 
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
   return (
     <Fragment key={directory.id}>
       {directory && directory.saved && (
-        <div className="flex-auto p-6 pb-0 bg-white">
-          <div className="flex flex-wrap items-center mb-4 -mx-3">
-            <div className="w-9/12 max-w-full px-3 flex-0">
-              <h5 className="z-10 mb-1 text-transparent bg-clip-text bg-gradient-to-tl from-primary-700 to-primary-500">
+        <div className="flex flex-wrap  pb-0 bg-white rounded-lg divide-x ">
+          <div className="flex-1 p-3">
+            <div className="flex flex-col m-1 mx-3">
+              <h5 className="bg-clip-text  from-primary-700 to-primary-500">
                 {directory.directory_name}
               </h5>
             </div>
-            <div className="w-3/12 max-w-full px-3 text-right flex-0">
-              <div className="relative">
-                <button onClick={() => setOpen(true)}>
-                  <FourDots className={"w-6 h-6 text-gray-400"} />
+          </div>
+          <div className="grow p-3">
+            {directory.indexed_at && (
+              <p className="font-light">
+                {`Indexed: ${formatTimeStampToHumanReadableShortDateTime(
+                  directory.indexed_at
+                )}`}
+              </p>
+            )}
+            <p>
+              File Count:{" "}
+              {metadata &&
+                metadata?.directoryFileCount?.find(
+                  (dir: { name: string }) =>
+                    dir.name === directory.directory_name
+                ).fileCount}
+            </p>
+          </div>
+          <div className="flex flex-col pl-2 justify-between">
+            <div className="relative">
+              <button className="ml-2" onClick={() => setOpen(true)}>
+                <MenuIcon className={"w-6 h-6 text-gray-400"} />
+              </button>
+
+              <SavedRepoMenu
+                open={open}
+                setOpen={setOpen}
+                handleAddNewFile={handleAddNewFile}
+                directory={directory}
+                handleIndexRepo={handleIndexRepo}
+                handleRemoveRepo={handleRemoveRepo}
+              />
+            </div>
+
+            <div className="mb-2 mr-2">
+              {indexingLoadingId === directory.id && !directory.indexed_at ? (
+                <LoadingSpinnerIcon
+                  className={
+                    "w-4 h- mr-2 text-primary-700 animate-spin dark:text-gray-600 fill-primary-700"
+                  }
+                />
+              ) : (
+                <button
+                  onClick={() => {
+                    handleIndexRepo(directory);
+                  }}
+                  className="py-2.2 px-3.6 text-xs rounded-1.8 inline-block whitespace-nowrap  bg-[#e4e8ed] text-center align-baseline font-bold uppercase leading-none text-[#5974a2]"
+                >
+                  {directory.indexed_at ? (
+                    <RefreshIcon className="w-3 h-3" />
+                  ) : (
+                    <UpArrowOnPaperIcon className="w-3 h-3" />
+                  )}
                 </button>
-
-                <div hidden={!open}>
-                  <ul
-                    ref={ref}
-                    className="z-100 min-w-44 text-sm shadow-soft-3xl duration-250 before:duration-350 before:font-awesome before:ease-soft before:text-5.5 dark:bg-gray-950 absolute top-0 right-0 left-auto m-0 mt-2 block origin-top cursor-pointer list-none rounded-lg border-0 border-solid border-transparent bg-white bg-clip-padding px-2 py-4 text-left text-slate-500"
-                  >
-                    <li className="relative">
-                      <button
-                        className="py-1.2 lg:ease-soft clear-both block w-full whitespace-nowrap rounded-lg px-4 font-normal text-slate-500 transition-colors hover:bg-gray-200 hover:text-slate-700 focus:bg-gray-200 focus:text-slate-700 dark:hover:bg-gray-200/80 dark:hover:text-slate-700 lg:duration-300"
-                        onClick={() => {
-                          setOpen(false);
-                          handleIndexRepo(directory);
-                        }}
-                      >
-                        Refresh
-                      </button>
-                    </li>
-                    <li className="relative">
-                      <button
-                        className="py-1.2 lg:ease-soft clear-both block w-full whitespace-nowrap rounded-lg px-4 font-normal text-slate-500 transition-colors hover:bg-gray-200 hover:text-slate-700 focus:bg-gray-200 focus:text-slate-700 dark:hover:bg-gray-200/80 dark:hover:text-slate-700 lg:duration-300"
-                        onClick={() => handleAddNewFile(directory.file_path)}
-                      >
-                        Add file
-                      </button>
-                    </li>
-
-                    <li className="relative">
-                      <hr className="h-px my-2 bg-gradient-to-r from-transparent via-black/40 to-transparent" />
-                    </li>
-                    <li className="relative">
-                      <button className="py-1.2 text-danger lg:ease-soft clear-both block w-full whitespace-nowrap rounded-lg px-4 font-normal text-red-600 transition-colors hover:bg-gray-200 focus:bg-gray-200 dark:hover:bg-gray-200/80 lg:duration-300">
-                        Remove Repo
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+              )}
             </div>
           </div>
           {directory &&
@@ -135,41 +137,6 @@ function SavedRepoItem({
               />
             </div>
           )}
-
-          <div className="flex m-1">
-            {directory.indexed_at && (
-              <p className="font-light mr-2">
-                {`Indexed: ${formatTimeStampToHumanReadableShortDateTime(
-                  directory.indexed_at
-                )}`}
-              </p>
-            )}
-            <Fragment>
-              {indexingLoadingId === directory.id && !directory.indexed_at ? (
-                <LoadingSpinnerIcon
-                  className={
-                    "w-4 h- mr-2 text-primary-700 animate-spin dark:text-gray-600 fill-primary-700"
-                  }
-                />
-              ) : (
-                <button
-                  onClick={() => {
-                    handleIndexRepo(directory);
-                  }}
-                  className="py-2.2 px-3.6 text-xs rounded-1.8 inline-block whitespace-nowrap ml-auto bg-[#e4e8ed] text-center align-baseline font-bold uppercase leading-none text-[#5974a2]"
-                >
-                  {directory.indexed_at ? (
-                    <RefreshIcon className="w-3 h-3" />
-                  ) : (
-                    <UpArrowOnPaperIcon className="w-3 h-3" />
-                  )}
-                  <span className="ml-1">
-                    {directory.indexed_at ? "Refresh" : "Index"}
-                  </span>
-                </button>
-              )}
-            </Fragment>
-          </div>
         </div>
       )}
     </Fragment>
