@@ -17,6 +17,7 @@ import {
 import MainPage from "./MainPage";
 import { FileUploadContextWrapper } from "../context/fileUpdateContext";
 import { SearchContextWrapper } from "../context/searchContext";
+import { PromptContextWrapper } from "../context/promptContext";
 
 declare global {
   interface Window {
@@ -38,21 +39,23 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <SessionContextWrapper>
-        <DirectoryContextWrapper>
-          <ScratchPadContextWrapper>
-            <FileUploadContextWrapper>
-              <SearchContextWrapper>
-                <CodeCompletionContextWrapper>
-                  <AiCompletedCodeContextWrapper>
-                    <MessageContextWrapper>
-                      <MainPage />
-                    </MessageContextWrapper>
-                  </AiCompletedCodeContextWrapper>
-                </CodeCompletionContextWrapper>
-              </SearchContextWrapper>
-            </FileUploadContextWrapper>
-          </ScratchPadContextWrapper>
-        </DirectoryContextWrapper>
+        <PromptContextWrapper>
+          <DirectoryContextWrapper>
+            <ScratchPadContextWrapper>
+              <FileUploadContextWrapper>
+                <SearchContextWrapper>
+                  <CodeCompletionContextWrapper>
+                    <AiCompletedCodeContextWrapper>
+                      <MessageContextWrapper>
+                        <MainPage />
+                      </MessageContextWrapper>
+                    </AiCompletedCodeContextWrapper>
+                  </CodeCompletionContextWrapper>
+                </SearchContextWrapper>
+              </FileUploadContextWrapper>
+            </ScratchPadContextWrapper>
+          </DirectoryContextWrapper>
+        </PromptContextWrapper>
       </SessionContextWrapper>
     </QueryClientProvider>
   );

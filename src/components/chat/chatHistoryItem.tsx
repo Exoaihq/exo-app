@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
-import { ChatMessage, ChatUserType } from "../../api";
+import { Fragment, useEffect, useState } from "react";
+import { ChatMessage, ChatUserType, MessagePrompts } from "../../api";
+import { usePromptContext } from "../../context/promptContext";
 import { formatTimeStampToHumanReadableTime } from "../../hooks/parseTimeStamp";
+import Toast from "../toast/toast";
 
 export function AssistentMessage({
   content,
   date,
+  children,
 }: {
   content: string;
   date: string;
+  children?: any;
 }) {
   return (
     <div className="flex flex-wrap justify-start mb-6 -mx-3">
@@ -15,8 +19,8 @@ export function AssistentMessage({
         <div className="relative flex flex-col min-w-0 break-words bg-white border-0 dark:bg-gray-950 dark:shadow-soft-dark-xl shadow-soft-xl rounded-2xl bg-clip-border">
           <div className="flex-auto px-4 py-2">
             <p className="mb-1">{content}</p>
+            {children}
             <div className="flex items-center leading-normal text-sm opacity-60">
-              <i className="mr-1 leading-normal ni leading-none ni-check-bold text-sm"></i>
               <small>{formatTimeStampToHumanReadableTime(date)}</small>
             </div>
           </div>
@@ -42,7 +46,6 @@ function UserMessage({
           <div className="flex-auto px-4 py-2">
             <p className="mb-1"> {content}</p>
             <div className="flex items-center justify-end leading-normal text-sm opacity-60">
-              <i className="mr-1 leading-normal ni leading-none ni-check-bold text-sm"></i>
               <small>{formatTimeStampToHumanReadableTime(date)}</small>
             </div>
           </div>
@@ -84,11 +87,58 @@ function ChatHistoryItem({
   message: ChatMessage;
   messagesEndRef: any;
 }) {
-  const { role, content, created_at } = message;
+  const { role, content, created_at, message_prompts } = message;
+
+  const { selectedPrompt, setSelectedPrompt, handleSubmitPrompt } =
+    usePromptContext();
+
+  const toggleOpen = (prompt: MessagePrompts) => {
+    setSelectedPrompt(prompt);
+  };
+
+  const toggleClosed = () => {
+    setSelectedPrompt(null);
+  };
 
   const line =
     role === ChatUserType.assistant ? (
-      <AssistentMessage content={content} date={created_at} />
+      <AssistentMessage content={content} date={created_at}>
+        <>
+          {message_prompts && message_prompts.length > 0 && (
+            <div className="relative">
+              <div className="flex flex-row">
+                <p className="m-0">
+                  You can also select one of these preset functions:
+                </p>
+                {message_prompts.map((prompt, index) => {
+                  return (
+                    <Fragment key={index}>
+                      <button
+                        onClick={() => toggleOpen(prompt)}
+                        className="px-1 font-medium text-primary-600 dark:text-blue-500 hover:underline"
+                      >
+                        {prompt.name}
+                        {message_prompts.length - 1 !== index && ", "}
+                      </button>
+                    </Fragment>
+                  );
+                })}
+              </div>
+              <div className="absolute -top-40 right-0">
+                <Toast
+                  message={selectedPrompt?.description || ""}
+                  open={selectedPrompt ? true : false}
+                  title={selectedPrompt?.name || ""}
+                  buttonText="Run Function"
+                  cancelButtonText="Cancel"
+                  handleClose={toggleClosed}
+                  handleSubmit={handleSubmitPrompt}
+                />
+              </div>
+            </div>
+          )}
+        </>
+      </AssistentMessage>
     ) : (
       <UserMessage
         content={content}

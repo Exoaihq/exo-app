@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { createContext, useContext, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { createMessage, getMessages } from "../api";
+import { ChatMessage, createMessage, getMessages } from "../api";
 import { useCodeCompletionContext } from "./codeCompletionContext";
 import { useSessionContext } from "./sessionContext";
 
@@ -42,7 +42,7 @@ export const MessageContextWrapper = (props: any) => {
 
 export const MessageContext = createContext({
   useCreateMessage: {} as any,
-  messages: [] as any,
+  messages: [] as ChatMessage[],
 });
 
 export const useMessageContext = () => useContext(MessageContext);

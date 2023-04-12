@@ -5,6 +5,7 @@ import {
   useScratchPadContext,
   useSessionContext,
 } from "../context";
+import { usePromptContext } from "../context/promptContext";
 
 import { useWindowWidth } from "../hooks/screenSize";
 import ChatHeader from "./chat/chatHeader";
@@ -16,6 +17,7 @@ import ScratchPadHeader from "./scratchPad/scratchPadHeader";
 
 const MainPage = () => {
   const { session, baseApiUrl, sessionId } = useSessionContext();
+  const { prompts } = usePromptContext();
 
   const { activeTab, setActiveTab } = useScratchPadContext();
   const { useCreateMessage } = useMessageContext();
