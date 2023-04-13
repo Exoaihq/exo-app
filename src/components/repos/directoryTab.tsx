@@ -102,13 +102,18 @@ function DirectoryTab() {
 
       <Divider />
       <div className="grid grid-flow-row-dense gap-2 grid-cols-1 grid-rows-3">
-        {directories &&
+        {directories && directories.length > 0 ? (
           directories.map((directory: GetDirectoriesResponseObject) => {
             return <SavedRepoItem directory={directory} key={directory.id} />;
-          })}
+          })
+        ) : (
+          <p className="text-gray-600">No saved repos</p>
+        )}
       </div>
 
-      <h3 className="mt-20">Recently Added</h3>
+      {directories && directories.length > 0 && (
+        <h3 className="mt-20">Recently Added</h3>
+      )}
       <Divider />
       <ul className="list-disc ml-4">
         {directories &&

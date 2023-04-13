@@ -4,9 +4,11 @@ import CodeListItem from "../../codeList/codeListItem";
 const CompletedCode = ({
   data,
   key,
+  defaultOpen,
 }: {
   data: GetAiCompletedCodeResponseObject;
   key: number;
+  defaultOpen: boolean;
 }) => {
   return (
     <CodeListItem
@@ -16,6 +18,7 @@ const CompletedCode = ({
       title={data.functionality}
       code={data.code}
       index={key}
+      defaultOpen={defaultOpen}
     />
   );
 };

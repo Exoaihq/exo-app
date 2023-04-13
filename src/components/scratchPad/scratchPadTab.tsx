@@ -23,7 +23,13 @@ function ScatchPadTab() {
           {data &&
             data.length > 0 &&
             data.map((item: GetAiCompletedCodeResponseObject, index: any) => {
-              return <CompletedCode key={index} data={item} />;
+              return (
+                <CompletedCode
+                  key={index}
+                  data={item}
+                  defaultOpen={index === 0}
+                />
+              );
             })}
         </div>
       </div>
