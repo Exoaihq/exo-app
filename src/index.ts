@@ -26,7 +26,18 @@ export async function createFileFromResponse(
   response: OpenAiResponseAndMetadata
 ) {
   const { metadata, completedCode } = response;
-  const { newFile, projectDirectory, projectFile } = metadata;
+  const { projectDirectory, projectFile } = metadata;
+
+  let newFile = true;
+
+  try {
+    const fileExists = await getFileContent(projectDirectory);
+    if (fileExists) {
+      newFile = false;
+    }
+  } catch (error) {
+    console.log("Can't find file, creating new file.");
+  }
 
   newFile
     ? createFile(projectFile, completedCode, projectDirectory)
@@ -73,7 +84,6 @@ const createWindow = (): void => {
   });
 
   const parentDirectory = getRootParentDirectory(process.cwd());
-  console.log(parentDirectory);
 
   ipcMain.handle("get-directories", async (event, response) => {
     const res = await iterateDir(response.file_path);

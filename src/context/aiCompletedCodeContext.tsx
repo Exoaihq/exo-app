@@ -32,7 +32,7 @@ export const AiCompletedCodeContextWrapper = (props: any) => {
     if (data && data.length > 0) {
       console.log(data);
 
-      data.forEach((code: GetAiCompletedCodeResponseObject) => {
+      data.forEach(async (code: GetAiCompletedCodeResponseObject) => {
         const { location, writen_to_file_at, file_name, path } = code;
 
         if (code.code && file_name && path && !writen_to_file_at) {
@@ -58,6 +58,27 @@ export const AiCompletedCodeContextWrapper = (props: any) => {
                 },
               });
             });
+        }
+
+        // Handle updating exisiting code
+        if (
+          code.code === null &&
+          file_name &&
+          path &&
+          !writen_to_file_at &&
+          location === "existingFile"
+        ) {
+          const fileContent = await window.api.getFile(path + "/" + file_name);
+
+          useUpdateAiCodeMutation.mutate({
+            session,
+            baseApiUrl,
+            sessionId,
+            id: code.id,
+            values: {
+              existing_code: fileContent,
+            },
+          });
         }
       });
     }

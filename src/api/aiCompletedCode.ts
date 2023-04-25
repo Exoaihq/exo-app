@@ -16,6 +16,7 @@ export interface GetAiCompletedCodeResponseObject {
   writen_to_file_at: string;
   file_name: string;
   path: string;
+  existing_code: string;
 }
 
 export interface UpdateAiCompletedCodeRequest {

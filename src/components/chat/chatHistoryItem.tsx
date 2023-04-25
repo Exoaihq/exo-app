@@ -139,12 +139,14 @@ function ChatHistoryItem({
           )}
         </>
       </AssistentMessage>
-    ) : (
+    ) : role === ChatUserType.user ? (
       <UserMessage
         content={content}
         date={created_at}
         messagesEndRef={messagesEndRef}
       />
+    ) : (
+      <></>
     );
   return line;
 }

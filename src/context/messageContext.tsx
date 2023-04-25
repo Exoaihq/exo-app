@@ -13,7 +13,7 @@ export const MessageContextWrapper = (props: any) => {
     queryKey: "messages",
     queryFn: () => getMessages({ session, baseApiUrl, sessionId }),
     enabled: !!session,
-    refetchInterval: 600000,
+    refetchInterval: 5000,
   });
 
   const useCreateMessage = useMutation(createMessage, {
