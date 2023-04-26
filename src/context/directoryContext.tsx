@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import {
@@ -143,11 +143,41 @@ export const DirectoryContextWrapper = (props: any) => {
     });
   }
 
-  // useEffect(() => {
-  //   if (!repo && data && data.length > 0) {
-  //     setRepo(data[0].file_path);
-  //   }
-  // }, [data]);
+  async function getChangedFiles(filePath: string) {
+    const files = await window.api.updateChangedFile(filePath);
+
+    const fileArray = files.split("\n").map((file) => {
+      return `${filePath}/${file}`;
+    });
+    fileArray.forEach(async (file) => {
+      const contents = await window.api.getFile(file);
+
+      useCreateFilesMutation.mutate({
+        session,
+        baseApiUrl,
+        sessionId,
+        files: [
+          {
+            filePath: file,
+            contents,
+          },
+        ],
+        directoryId: directoryToIndex?.id ? directoryToIndex.id : "",
+      });
+    });
+
+    return fileArray;
+  }
+
+  useEffect(() => {
+    if (data && data.data) {
+      for (const directory of data.data) {
+        if (directory.saved && directory.is_root_directory) {
+          getChangedFiles(directory.file_path);
+        }
+      }
+    }
+  }, [data]);
 
   const value = {
     directories: data?.data,

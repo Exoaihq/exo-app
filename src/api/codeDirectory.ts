@@ -28,6 +28,7 @@ export interface GetDirectoriesResponseObject {
   directory_name: string;
   indexed_at: string;
   directory_explaination?: string;
+  is_root_directory: boolean;
 }
 
 export interface DirectoryFileCount {

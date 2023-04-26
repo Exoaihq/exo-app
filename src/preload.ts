@@ -22,4 +22,8 @@ contextBridge.exposeInMainWorld("api", {
 
   selectFolder: () => ipcRenderer.invoke("dialog:openDirectory"),
   reload: () => ipcRenderer.invoke("reload"),
+
+  updateChangedFile: (filePath: string) => {
+    return ipcRenderer.invoke("update-changed-file", filePath);
+  },
 });

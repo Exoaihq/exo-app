@@ -9,6 +9,8 @@ import {
   iterateDir,
   overwriteFile,
 } from "./utils/fileSystem";
+import { getGitDiff } from "./utils/gitCommands";
+
 todesktop.init();
 const path = require("path");
 
@@ -44,7 +46,7 @@ export async function createFileFromResponse(
     : overwriteFile(projectDirectory, completedCode);
 }
 
-const createWindow = (): void => {
+const createWindow = async (): Promise<void> => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     height: 1200,
@@ -66,6 +68,10 @@ const createWindow = (): void => {
 
   ipcMain.handle("get-file-contents", (event, response) => {
     return getFileContent(response);
+  });
+
+  ipcMain.handle("update-changed-file", async (event, response) => {
+    return await getGitDiff(response);
   });
 
   ipcMain.handle("dialog:openDirectory", async () => {
