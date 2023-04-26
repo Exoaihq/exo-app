@@ -15,7 +15,13 @@ const CompletedCode = ({
       key={key}
       date={data.created_at}
       completed={data.completed_at}
-      title={data.functionality}
+      title={
+        data.functionality
+          ? data.functionality
+          : data.code
+          ? `${data.code.substring(0, 50)}...`
+          : "Code:"
+      }
       code={data.code}
       index={key}
       defaultOpen={defaultOpen}

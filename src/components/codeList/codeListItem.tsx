@@ -57,10 +57,10 @@ const CodeListItem = (props: CodeListItemProps) => {
                 Select
               </button>
             )}
-            {!completed && <LoadingIndicator />}
+            {!code && <LoadingIndicator />}
           </div>
         </div>
-        {completed && (
+        {code && (
           <button className={"basis-1/4"} onClick={toggle}>
             {showCode ? (
               <ChevronUpIcon className={"w-6 h-6"} />

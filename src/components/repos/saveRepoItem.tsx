@@ -122,7 +122,7 @@ function SavedRepoItem({
           {directory &&
             directory.directory_explaination &&
             directory.directory_explaination !== "NULL" && (
-              <p className="">{directory.directory_explaination}</p>
+              <p className="p-4">{directory.directory_explaination}</p>
             )}
           {directoryToIndex && directoryToIndex.id === directory.id && (
             <div className="absolute">
