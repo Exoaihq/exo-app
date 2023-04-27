@@ -2,13 +2,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createContext, useContext, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { MessagePrompts } from "../api";
+import { ChatMessage, MessagePrompts } from "../api";
 import { getPrompts, submitPrompt } from "../api/prompt";
 import { useSessionContext } from "./sessionContext";
 
 export const PromptContextWrapper = (props: any) => {
   const queryClient = useQueryClient();
   const { session, baseApiUrl, sessionId } = useSessionContext();
+  const [selectedMessage, setSelectedMessage] = useState<ChatMessage | null>(
+    null
+  );
   const [selectedPrompt, setSelectedPrompt] = useState<MessagePrompts | null>();
 
   const useAddNewFileMutation = useMutation(submitPrompt, {
@@ -44,6 +47,8 @@ export const PromptContextWrapper = (props: any) => {
     selectedPrompt,
     setSelectedPrompt,
     handleSubmitPrompt,
+    selectedMessage,
+    setSelectedMessage,
   };
   return (
     <PromptContext.Provider value={value}>
@@ -57,6 +62,8 @@ export const PromptContext = createContext({
   selectedPrompt: null as any,
   setSelectedPrompt: (selectedPrompt: MessagePrompts | null) => {},
   handleSubmitPrompt: () => {},
+  selectedMessage: null as any,
+  setSelectedMessage: (selectedMessage: ChatMessage | null) => {},
 });
 
 export const usePromptContext = () => useContext(PromptContext);

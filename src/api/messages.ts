@@ -23,6 +23,7 @@ export interface ChatMessage {
   created_location?: string;
   created_at?: string;
   message_prompts?: MessagePrompts[];
+  id?: string;
 }
 
 export interface MessagePrompts {

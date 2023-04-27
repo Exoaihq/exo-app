@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 import { ChatMessage, ChatUserType, MessagePrompts } from "../../api";
 import { usePromptContext } from "../../context/promptContext";
 import { formatTimeStampToHumanReadableTime } from "../../hooks/parseTimeStamp";
-import Toast from "../toast/toast";
+import SimpleToast from "../toast/toast";
 
 export function AssistentMessage({
   content,
@@ -89,10 +89,17 @@ function ChatHistoryItem({
 }) {
   const { role, content, created_at, message_prompts } = message;
 
-  const { selectedPrompt, setSelectedPrompt, handleSubmitPrompt } =
-    usePromptContext();
+  const {
+    selectedPrompt,
+    setSelectedPrompt,
+    handleSubmitPrompt,
+    setSelectedMessage,
+    selectedMessage,
+  } = usePromptContext();
 
   const toggleOpen = (prompt: MessagePrompts) => {
+    setSelectedMessage(message);
+
     setSelectedPrompt(prompt);
   };
 
@@ -125,15 +132,21 @@ function ChatHistoryItem({
                 })}
               </div>
               <div className="absolute -top-40 right-0">
-                <Toast
-                  message={selectedPrompt?.description || ""}
-                  open={selectedPrompt ? true : false}
-                  title={selectedPrompt?.name || ""}
-                  buttonText="Run Function"
-                  cancelButtonText="Cancel"
-                  handleClose={toggleClosed}
-                  handleSubmit={handleSubmitPrompt}
-                />
+                {selectedPrompt && selectedMessage.id === message.id && (
+                  <SimpleToast
+                    message={selectedPrompt?.description || ""}
+                    open={
+                      selectedPrompt && selectedMessage.id === message.id
+                        ? true
+                        : false
+                    }
+                    title={selectedPrompt?.name || ""}
+                    buttonText="Run Function"
+                    cancelButtonText="Cancel"
+                    handleClose={toggleClosed}
+                    handleSubmit={handleSubmitPrompt}
+                  />
+                )}
               </div>
             </div>
           )}

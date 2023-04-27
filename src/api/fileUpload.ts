@@ -15,7 +15,7 @@ export function fileUpload(
       refresh_token: req.session?.refresh_token,
       session_id: req.sessionId,
     },
-    url: req.baseApiUrl + "/code/file",
+    url: req.baseApiUrl + "/code-file/add",
     body: JSON.stringify({
       codeContent: req.codeContent,
       fullFilePathWithName: req.fullFilePathWithName,
