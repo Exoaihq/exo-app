@@ -14,6 +14,48 @@ import {
 } from "../api";
 import { useSessionContext } from "./sessionContext";
 
+export const filesToExcule = [
+  "yarn.lock",
+  ".json",
+  "supabase.ts",
+  "yarn-error.log",
+  ".eslintrc.json",
+  ".git",
+  ".gitignore",
+  ".DS_Store",
+  "package-lock.json",
+  ".png",
+  ".jpg",
+  ".jpeg",
+  ".svg",
+  ".ico",
+  ".pdf",
+  ".woff",
+  ".woff2",
+  ".ttf",
+  ".eot",
+  ".otf",
+  ".txt",
+  "_error.js",
+  "_buildManifest.js",
+  "_ssgManifest.js",
+  "polyfills.js",
+  "react-refresh.js",
+  "webpack.js",
+  "build-manifest.json",
+  "react-loadable-manifest.json",
+  ".CVS",
+  "amp.js",
+  "amp.js.map",
+  ".hot-update.js",
+  ".prettierrc.js",
+  "jest.config.js",
+  "jest.setup.js",
+  "next-env.d.ts",
+  "next-sitemap.config.js",
+  "next.config.js",
+];
+
 export const DirectoryContextWrapper = (props: any) => {
   const queryClient = useQueryClient();
   const { session, baseApiUrl, sessionId, setLoading } = useSessionContext();
@@ -149,21 +191,36 @@ export const DirectoryContextWrapper = (props: any) => {
     const fileArray = files.split("\n").map((file) => {
       return `${filePath}/${file}`;
     });
-    fileArray.forEach(async (file) => {
-      const contents = await window.api.getFile(file);
 
-      useCreateFilesMutation.mutate({
-        session,
-        baseApiUrl,
-        sessionId,
-        files: [
-          {
-            filePath: file,
-            contents,
-          },
-        ],
-        directoryId: directoryToIndex?.id ? directoryToIndex.id : "",
-      });
+    function substringMatch(str: string, substrings: string[]) {
+      for (let i = 0; i < substrings.length; i++) {
+        if (str.includes(substrings[i])) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    fileArray.forEach(async (file) => {
+      if (substringMatch(file, filesToExcule)) {
+        console.log("file exlcluded", file);
+        return;
+      } else {
+        console.log("file added", file);
+        const contents = await window.api.getFile(file);
+        useCreateFilesMutation.mutate({
+          session,
+          baseApiUrl,
+          sessionId,
+          files: [
+            {
+              filePath: file,
+              contents,
+            },
+          ],
+          directoryId: directoryToIndex?.id ? directoryToIndex.id : "",
+        });
+      }
     });
 
     return fileArray;
