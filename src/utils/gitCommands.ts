@@ -15,6 +15,13 @@ export async function getGitDiff(baseDirectory: string) {
 
   const diff = await git.diff(gitDiffOptions);
 
-  console.log("diff >>>>>>>>>>", diff);
-  return diff;
+  const status = await git.status();
+  const untrackedFiles = status.not_added.map(
+    (file) => `${baseDirectory}/${file}`
+  );
+
+  return {
+    files: diff,
+    untrackedFiles,
+  };
 }

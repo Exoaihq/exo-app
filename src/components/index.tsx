@@ -30,7 +30,10 @@ declare global {
       ) => Promise<FilePathAndContent[]>;
       selectFolder: () => Promise<string>;
       reload: () => Promise<void>;
-      updateChangedFile: (path: string) => Promise<string>;
+      updateChangedFile: (path: string) => Promise<{
+        files: string;
+        untrackedFiles: string[];
+      }>;
     };
   }
 }

@@ -65,6 +65,7 @@ export const DirectoryContextWrapper = (props: any) => {
 
   const [repo, setRepo] = useState("");
   const [repoToAddFile, setSetRepoToAddFile] = useState("");
+  const [run, setRun] = useState(false);
 
   const [showFileSection, setShowFileSection] = useState(false);
   const [indexingLoadingId, setIndexingLoadingId] = useState(null);
@@ -185,12 +186,16 @@ export const DirectoryContextWrapper = (props: any) => {
     });
   }
 
-  async function getChangedFiles(filePath: string) {
-    const files = await window.api.updateChangedFile(filePath);
+  async function getChangedFiles(filePath: string, directoryId: string) {
+    const { files, untrackedFiles } = await window.api.updateChangedFile(
+      filePath
+    );
 
     const fileArray = files.split("\n").map((file) => {
       return `${filePath}/${file}`;
     });
+
+    const allFiles = [...fileArray, ...untrackedFiles];
 
     function substringMatch(str: string, substrings: string[]) {
       for (let i = 0; i < substrings.length; i++) {
@@ -201,12 +206,10 @@ export const DirectoryContextWrapper = (props: any) => {
       return false;
     }
 
-    fileArray.forEach(async (file) => {
+    allFiles.forEach(async (file) => {
       if (substringMatch(file, filesToExcule)) {
-        console.log("file exlcluded", file);
         return;
       } else {
-        console.log("file added", file);
         const contents = await window.api.getFile(file);
         useCreateFilesMutation.mutate({
           session,
@@ -218,7 +221,7 @@ export const DirectoryContextWrapper = (props: any) => {
               contents,
             },
           ],
-          directoryId: directoryToIndex?.id ? directoryToIndex.id : "",
+          directoryId,
         });
       }
     });
@@ -230,7 +233,7 @@ export const DirectoryContextWrapper = (props: any) => {
     if (data && data.data) {
       for (const directory of data.data) {
         if (directory.saved && directory.is_root_directory) {
-          getChangedFiles(directory.file_path);
+          getChangedFiles(directory.file_path, directory.id);
         }
       }
     }

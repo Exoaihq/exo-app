@@ -89,7 +89,7 @@ const createWindow = async (): Promise<void> => {
     mainWindow.reload();
   });
 
-  const parentDirectory = getRootParentDirectory(process.cwd());
+  // const parentDirectory = getRootParentDirectory(process.cwd());
 
   ipcMain.handle("get-directories", async (event, response) => {
     const res = await iterateDir(response.file_path);
