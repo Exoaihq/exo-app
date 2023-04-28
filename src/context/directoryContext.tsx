@@ -69,6 +69,7 @@ export const DirectoryContextWrapper = (props: any) => {
 
   const [showFileSection, setShowFileSection] = useState(false);
   const [indexingLoadingId, setIndexingLoadingId] = useState(null);
+  const [lastCheckedTime, setLastCheckedTime] = useState(null);
 
   function toggleToast() {
     setToast(!toastOpen);
@@ -230,10 +231,13 @@ export const DirectoryContextWrapper = (props: any) => {
   }
 
   useEffect(() => {
-    if (data && data.data) {
+    const now = Date.now();
+    const afterTenMin = !lastCheckedTime || lastCheckedTime + 600000 > now;
+    if (data && data.data && afterTenMin) {
       for (const directory of data.data) {
         if (directory.saved && directory.is_root_directory) {
           getChangedFiles(directory.file_path, directory.id);
+          setLastCheckedTime(Date.now());
         }
       }
     }
