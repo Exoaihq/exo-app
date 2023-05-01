@@ -30,8 +30,6 @@ export const AiCompletedCodeContextWrapper = (props: any) => {
 
   useEffect(() => {
     if (data && data.length > 0) {
-      console.log(data);
-
       data.forEach(async (code: GetAiCompletedCodeResponseObject) => {
         const { location, writen_to_file_at, file_name, path } = code;
 

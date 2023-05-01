@@ -1,0 +1,25 @@
+{
+  "directoryName": "code-gen-app",
+  "explanation": "\n\nThis directory, code-gen-app, contains code files that are used to generate various components for a web application. The files include CheckBadge.tsx, ChatBubble.tsx, LoadingSpinner.tsx, fileSystem.ts, toastNoButtons.tsx, icon.png, loadingIndicator.tsx, and app.tsx. These files contain code snippets that create icons, chat bubbles, loading spinners, file system interactions, alert dialogue boxes, and loading indicators, as well as a PNG file for an image. Additionally, the postcss.config.js file is included, which exports an object containing an array of plugins, such as TailwindCSS and Autoprefixer.",
+  "codeStandards": [
+    "Use meaningful and descriptive variable, function, and class names to enhance code readability and maintainability.",
+    "Follow consistent indentation to improve code structure and organization.",
+    "Make use of TypeScript's type system to avoid common runtime errors and improve code robustness.",
+    "Use ES6 and TypeScript features such as arrow functions and type annotations to write modern and scalable code.",
+    "Avoid any unnecessary or redundant code to improve code performance and readability.",
+    "Use tools such as linters, formatters, and debuggers to catch and fix errors and warnings early in the development process.",
+    "Write test cases and conduct testing to ensure code quality and reliability.",
+    "Follow established coding conventions and language-specific guidelines to promote code consistency and coherence within a project or team.",
+    "Use comments and documentation to explain complex or critical parts of the code and facilitate collaboration and knowledge transfer among developers.",
+    "Continuously review and refactor code to improve code quality, maintainability, and scalability over time.",
+    "Use a consistent naming convention for your .ts files, such as PascalCase or camelCase.",
+    "Ensure that your .ts files are properly organized into their respective directories based on functionality.",
+    "Include comments to explain the purpose and logic of your code.",
+    "Use types and interfaces wherever possible to make your code more readable and self-documenting.",
+    "Make use of error handling and debugging tools to ensure that your code works as expected.",
+    "Follow the coding style guidelines recommended by the framework or library you are using.",
+    "Minimize the complexity and length of your functions and classes to improve maintainability.",
+    "Use a linter to enforce coding standards and prevent common coding errors."
+  ],
+  "testFrameworks": []
+}

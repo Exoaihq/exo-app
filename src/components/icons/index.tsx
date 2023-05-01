@@ -14,3 +14,5 @@ export * from "./Refresh";
 export * from "./PaperAirplane";
 export * from "./Search";
 export * from "./Menu";
+export * from "./Edit";
+export * from "./GarbageCan";

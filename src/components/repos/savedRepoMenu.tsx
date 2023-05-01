@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useDirectoryContext } from "../../context";
 
 function SavedRepoMenu({
   open,
@@ -16,6 +17,7 @@ function SavedRepoMenu({
   handleAddNewFile: (addFileDirectrory: string) => void;
   handleRemoveRepo: (directoryId: string) => void;
 }) {
+  const { setShowConfigId } = useDirectoryContext();
   const ref = useRef(null);
   const handleClickOutside = (event: { target: any }) => {
     if (ref.current && !ref.current.contains(event.target)) {
@@ -52,6 +54,17 @@ function SavedRepoMenu({
             onClick={() => handleAddNewFile(directory.file_path)}
           >
             Add file
+          </button>
+        </li>
+        <li className="relative">
+          <button
+            className="py-1.2 lg:ease-soft clear-both block w-full whitespace-nowrap rounded-lg px-4 font-normal text-slate-500 transition-colors hover:bg-gray-200 hover:text-slate-700 focus:bg-gray-200 focus:text-slate-700 dark:hover:bg-gray-200/80 dark:hover:text-slate-700 lg:duration-300"
+            onClick={() => {
+              setOpen(false);
+              setShowConfigId(directory.id);
+            }}
+          >
+            Show config
           </button>
         </li>
 

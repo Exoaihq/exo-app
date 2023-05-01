@@ -1,4 +1,5 @@
 import { ApiRoutes } from ".";
+import { ExoConfigType } from "../components/repos/saveRepoItem";
 
 export interface CreateDirectoryRequest {
   directory: string;
@@ -29,6 +30,7 @@ export interface GetDirectoriesResponseObject {
   indexed_at: string;
   directory_explaination?: string;
   is_root_directory: boolean;
+  exoConfig: any;
 }
 
 export interface DirectoryFileCount {

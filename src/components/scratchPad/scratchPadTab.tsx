@@ -12,7 +12,7 @@ function ScatchPadTab() {
   return (
     <div>
       <textarea
-        className=" text-md leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-primary-500 focus:outline-none"
+        className="text-md leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-primary-500 focus:outline-none"
         rows={4}
         value={scratchPadValue}
         onChange={(event) => setScratchPadValue(event.target.value)}

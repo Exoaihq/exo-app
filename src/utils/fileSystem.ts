@@ -122,7 +122,6 @@ const foldersToExclude = [
 
 const filesToExcule = [
   "yarn.lock",
-  ".json",
   "supabase.ts",
   "yarn-error.log",
   ".eslintrc.json",

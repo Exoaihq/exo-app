@@ -98,10 +98,10 @@ function DirectoryTab() {
           </div>
         )}
       </div>
-      <h3 className="mt-20">Saved Repos</h3>
+      <h5 className="mt-20">Saved Repos</h5>
 
       <Divider />
-      <div className="grid grid-flow-row-dense gap-2 grid-cols-1 grid-rows-3">
+      <div className="grid grid-flow-row-dense gap-2 grid-cols-1 ">
         {directories && directories.length > 0 ? (
           directories.map((directory: GetDirectoriesResponseObject) => {
             return <SavedRepoItem directory={directory} key={directory.id} />;

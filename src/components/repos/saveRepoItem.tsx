@@ -1,7 +1,10 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { GetDirectoriesResponseObject } from "../../api";
 import { useDirectoryContext } from "../../context";
+import { ExoConfigContextWrapper } from "../../context/exoConfigContext";
+
 import { formatTimeStampToHumanReadableShortDateTime } from "../../hooks/parseTimeStamp";
+import Divider from "../divider";
 import {
   LoadingSpinnerIcon,
   MenuIcon,
@@ -9,7 +12,15 @@ import {
   UpArrowOnPaperIcon,
 } from "../icons";
 import SimpleToast from "../toast/toast";
+import ExoConfig from "./exoConfig";
 import SavedRepoMenu from "./savedRepoMenu";
+
+export interface ExoConfigType {
+  directoryName: string;
+  explanation: string;
+  codeStandards: string[];
+  testFrameworks: string[];
+}
 
 function SavedRepoItem({
   directory,
@@ -29,6 +40,14 @@ function SavedRepoItem({
   } = useDirectoryContext();
 
   const [open, setOpen] = useState(false);
+  const [exoConfig, setExoConfig] = useState<ExoConfigType>({
+    directoryName: "",
+    explanation: "",
+    codeStandards: [],
+    testFrameworks: [],
+  });
+  const [configSnippetId, setConfigSnippetId] = useState<number>(null);
+  const { showConfigId } = useDirectoryContext();
 
   function getIndexMessageTitle() {
     if (!directoryToIndex) {
@@ -51,6 +70,24 @@ function SavedRepoItem({
         : `Indexing this repo will allow you to search and edit files within the repo. It does take a couple mintues to index.`
     }`;
   }
+
+  const getExpoConfig = () => {
+    if (!directory || !directory.exoConfig) {
+      return "";
+    } else {
+      const exoConfigString = directory.exoConfig.code_snippet[0].code_string;
+      const exoParsed = JSON.parse(exoConfigString);
+
+      if (exoParsed) {
+        setExoConfig(exoParsed);
+        setConfigSnippetId(directory.exoConfig.code_snippet[0].id);
+      }
+    }
+  };
+
+  useEffect(() => {
+    getExpoConfig();
+  }, [directory]);
 
   return (
     <Fragment key={directory.id}>
@@ -119,11 +156,15 @@ function SavedRepoItem({
               )}
             </div>
           </div>
-          {directory &&
-            directory.directory_explaination &&
-            directory.directory_explaination !== "NULL" && (
-              <p className="p-4">{directory.directory_explaination}</p>
-            )}
+          {directory && showConfigId === directory.id && exoConfig && (
+            <ExoConfigContextWrapper
+              exoConfig={exoConfig}
+              configSnippetId={configSnippetId}
+            >
+              <Divider />
+              <ExoConfig />
+            </ExoConfigContextWrapper>
+          )}
           {directoryToIndex && directoryToIndex.id === directory.id && (
             <div className="absolute">
               <SimpleToast

@@ -70,6 +70,7 @@ export const DirectoryContextWrapper = (props: any) => {
   const [showFileSection, setShowFileSection] = useState(false);
   const [indexingLoadingId, setIndexingLoadingId] = useState(null);
   const [lastCheckedTime, setLastCheckedTime] = useState(null);
+  const [showConfigId, setShowConfigId] = useState(false);
 
   function toggleToast() {
     setToast(!toastOpen);
@@ -232,7 +233,8 @@ export const DirectoryContextWrapper = (props: any) => {
 
   useEffect(() => {
     const now = Date.now();
-    const afterTenMin = !lastCheckedTime || lastCheckedTime + 600000 > now;
+    const hasBeenTenMin = lastCheckedTime + 600000 < now;
+    const afterTenMin = !lastCheckedTime || hasBeenTenMin;
     if (data && data.data && afterTenMin) {
       for (const directory of data.data) {
         if (directory.saved && directory.is_root_directory) {
@@ -260,6 +262,8 @@ export const DirectoryContextWrapper = (props: any) => {
     setShowFileSection,
     indexingLoadingId,
     handleRemoveRepo,
+    showConfigId,
+    setShowConfigId,
   };
   return (
     <DirectoryContext.Provider value={value}>
@@ -284,6 +288,8 @@ export const DirectoryContext = createContext({
   handleAddNewFile: (addFileDirectrory: string) => {},
   handleRemoveRepo: (directoryId: string) => {},
   metadata: {} as DirectoryMetadata,
+  showConfigId: null,
+  setShowConfigId: (showConfigId: boolean) => {},
 });
 
 export const useDirectoryContext = () => useContext(DirectoryContext);
