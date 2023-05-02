@@ -4,12 +4,21 @@ export interface UpdateExoConfigRequest {
   exoConfig: ExoConfigType;
   snippetId: number;
   baseApiUrl: string;
-  session: any;
+  session: {
+    access_token: string;
+    refresh_token: string;
+  };
   sessionId: string;
   directoryId?: string;
 }
 
-export function updateExoConfig(req: UpdateExoConfigRequest): Promise<any> {
+export interface ApiResponse<T> {
+  data: T;
+}
+
+export async function updateExoConfig(
+  req: UpdateExoConfigRequest
+): Promise<any> {
   const request = {
     method: "POST",
     headers: {
@@ -27,18 +36,16 @@ export function updateExoConfig(req: UpdateExoConfigRequest): Promise<any> {
     }),
   };
 
-  return fetch(request.url, request)
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error(res.statusText);
-      }
-      return res.json();
-    })
-    .then((res: any) => {
-      const { data } = res;
-      return data;
-    })
-    .catch((err) => {
-      throw new Error(err);
-    });
+  try {
+    const response = await fetch(request.url, request);
+
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
+    const jsonResponse: ApiResponse<any> = await response.json(); // Consider using a more specific type if possible
+    return jsonResponse.data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }

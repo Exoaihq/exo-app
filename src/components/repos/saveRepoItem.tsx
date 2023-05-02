@@ -75,7 +75,11 @@ function SavedRepoItem({
     if (!directory || !directory.exoConfig) {
       return "";
     } else {
-      const exoConfigString = directory.exoConfig.code_snippet[0].code_string;
+      const exoConfigString =
+        directory?.exoConfig?.code_snippet[0]?.code_string;
+      if (!exoConfigString) {
+        return "";
+      }
       const exoParsed = JSON.parse(exoConfigString);
 
       if (exoParsed) {

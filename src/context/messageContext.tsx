@@ -5,11 +5,15 @@ import { ChatMessage, createMessage, getMessages } from "../api";
 import { useCodeCompletionContext } from "./codeCompletionContext";
 import { useSessionContext } from "./sessionContext";
 
-export const MessageContextWrapper = (props: any) => {
+interface MessageContextWrapperProps {
+  children: React.ReactNode;
+}
+
+export const MessageContextWrapper = (props: MessageContextWrapperProps) => {
   const queryClient = useQueryClient();
   const { session, baseApiUrl, sessionId } = useSessionContext();
   const { handleCodeChatMutation } = useCodeCompletionContext();
-  const { data } = useQuery({
+  const { data: messages } = useQuery({
     queryKey: "messages",
     queryFn: () => getMessages({ session, baseApiUrl, sessionId }),
     enabled: !!session,
@@ -24,15 +28,13 @@ export const MessageContextWrapper = (props: any) => {
   });
 
   useEffect(() => {
-    if (data && data.length > 0 && data[data.length - 1]) {
-      console.log(data[data.length - 1].created_location);
-      if (data[data.length - 1].created_location === "browser") {
-        handleCodeChatMutation();
-      }
+    const lastMessage = messages?.[messages.length - 1];
+    if (lastMessage?.created_location === "browser") {
+      handleCodeChatMutation();
     }
-  }, [data]);
+  }, [messages]);
 
-  const value = { useCreateMessage, messages: data };
+  const value = { useCreateMessage, messages };
   return (
     <MessageContext.Provider value={value}>
       {props.children}
