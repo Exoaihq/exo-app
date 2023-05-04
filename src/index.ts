@@ -1,11 +1,10 @@
-import { app, BrowserWindow, dialog, globalShortcut, ipcMain } from "electron";
+import { app, BrowserWindow, dialog, ipcMain } from "electron";
 import { OpenAiResponseAndMetadata } from "./api/codeCompletion";
 
 import todesktop from "@todesktop/runtime";
 import {
   createFile,
   getFileContent,
-  getRootParentDirectory,
   iterateDir,
   overwriteFile,
 } from "./utils/fileSystem";

@@ -2,11 +2,11 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { createContext, useContext, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
-import { codeCompletion } from "../api";
 import { textIncludeScratchPad } from "../utils/parsingReturnedCode";
 import { useDirectoryContext } from "./directoryContext";
 import { useScratchPadContext } from "./scratchPadContext";
 
+import { sendCodeToAgent } from "../api/agent";
 import { useFileUploadContext } from "./fileUpdateContext";
 import { useSearchContext } from "./searchContext";
 import { useSessionContext } from "./sessionContext";
@@ -26,7 +26,7 @@ export const CodeCompletionContextWrapper = (props: any) => {
 
   const [scratchPadContent, setScratchPadContent] = useState("");
 
-  const useCodeCompletion = useMutation(codeCompletion, {
+  const useCodeCompletion = useMutation(sendCodeToAgent, {
     onSuccess: async (res) => {
       setActiveTab("Scratch Pad");
       setShowFileSection(true);

@@ -20,4 +20,5 @@ export enum ApiRoutes {
   MESSAGES = "/messages",
   CODE_COMPLETION = "/code",
   AI_COMPLETED_CODE = "/ai-completed-code",
+  AGENT = "/agent",
 }
