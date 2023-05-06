@@ -1,4 +1,4 @@
-import { LoadingSpinnerIcon } from "../../../components/icons";
+import { LoadingSpinnerIcon } from "../../icons";
 
 function LoadingIndicator() {
   return (
@@ -6,12 +6,12 @@ function LoadingIndicator() {
       <div role="status">
         <LoadingSpinnerIcon
           className={
-            "w-5 h-5 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+            "w-5 h-5 mr-2 text-gray-100 animate-spin dark:text-gray-400 fill-primary-700"
           }
         />
         <span className="sr-only">Loading...</span>
       </div>
-      Preparing to write your code
+      Writing your code
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useExoConfigContext } from "../../context/exoConfigContext";
 import Divider from "../divider";
 import { EditIcon } from "../icons";
 import { GarbageCanIcon } from "../icons/GarbageCan";
-import LoadingIndicator from "../scratchPad/completedCode.tsx/loadingIndicator";
+import LoadingIndicator from "../scratchPad/completedCode/loadingIndicator";
 
 function ExoConfig() {
   const {

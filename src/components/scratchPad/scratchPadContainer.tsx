@@ -3,6 +3,7 @@ import { useScratchPadContext } from "../../context";
 import DirectoryTab from "../repos/directoryTab";
 import SearchTab from "../search/searchTab";
 import ScatchPadTab from "./scratchPadTab";
+import { TaskContextWrapper } from "../../context/taskContex";
 
 export enum ChatUserType {
   system = "system",
@@ -36,11 +37,13 @@ function ScratchPadContainer() {
   }, [history]);
 
   return (
-    <div className="relative w-full p-6 h-[50rem] overflow-auto bg-gray-200">
-      {activeTab === "Scratch Pad" && <ScatchPadTab />}
-      {activeTab === "Repos" && <DirectoryTab />}
-      {activeTab === "Search" && <SearchTab />}
-    </div>
+    <TaskContextWrapper>
+      <div className="relative w-full p-6 h-[50rem] overflow-auto bg-gray-200">
+        {activeTab === "Scratch Pad" && <ScatchPadTab />}
+        {activeTab === "Repos" && <DirectoryTab />}
+        {activeTab === "Search" && <SearchTab />}
+      </div>
+    </TaskContextWrapper>
   );
 }
 export default ScratchPadContainer;

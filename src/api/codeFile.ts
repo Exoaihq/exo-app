@@ -1,4 +1,5 @@
 import { FilePathAndContent } from "../utils/fileSystem";
+import { ApiRoutes } from "./api.types";
 
 export interface CreateFilesRequest {
   files: FilePathAndContent[];
@@ -17,7 +18,7 @@ export function createFiles(req: CreateFilesRequest): Promise<any> {
       refresh_token: req.session?.refresh_token,
       session_id: req.sessionId,
     },
-    url: req.baseApiUrl + "/code-file",
+    url: req.baseApiUrl + ApiRoutes.CODE_FILE,
     body: JSON.stringify({
       files: req.files,
       sessionId: req.sessionId,

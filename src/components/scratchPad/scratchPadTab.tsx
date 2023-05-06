@@ -1,13 +1,25 @@
+import { Fragment, useEffect, useState } from "react";
 import { GetAiCompletedCodeResponseObject } from "../../api";
 import {
   useAiCompletedCodeContext,
   useCodeCompletionContext,
 } from "../../context";
-import CompletedCode from "./completedCode.tsx/completedCode";
+import { useTaskContext } from "../../context/taskContex";
+import CompletedCode from "./completedCode/completedCode";
+import TaskItem from "./taskItem/taskItem";
 
 function ScatchPadTab() {
   const { data } = useAiCompletedCodeContext();
   const { scratchPadValue, setScratchPadValue } = useCodeCompletionContext();
+  const { tasks } = useTaskContext();
+
+  const [showCompletedCode, setShowCompletedCode] = useState(true);
+
+  useEffect(() => {
+    if (tasks && tasks.length > 0) {
+      setShowCompletedCode(false);
+    }
+  }, [tasks]);
 
   return (
     <div>
@@ -18,21 +30,44 @@ function ScatchPadTab() {
         onChange={(event) => setScratchPadValue(event.target.value)}
         placeholder="Paste your code here"
       />
-      <div className="flex flex-wrap max-w-fit">
-        <div>
-          {data &&
-            data.length > 0 &&
-            data.map((item: GetAiCompletedCodeResponseObject, index: any) => {
-              return (
-                <CompletedCode
-                  key={index}
-                  data={item}
-                  defaultOpen={index === 0}
-                />
-              );
-            })}
+      {tasks && tasks.length > 0 && (
+        <div className="flex flex-wrap max-w-fit gap-2">
+          <h5 className="mt-2">Outstanding tasks</h5>
+          <div className="mt-2 border-b-4 border-primary-500 w-full"></div>
+          {tasks.map((task, index) => {
+            return (
+              <Fragment key={index}>
+                <TaskItem task={task} />
+              </Fragment>
+            );
+          })}
         </div>
-      </div>
+      )}
+      {data && data.length > 0 && (
+        <button
+          className="flex flex-end mt-2 items-center p-2 hover:text-gray-700 bg-primary-400 text-primary-700 rounded-lg"
+          onClick={() => setShowCompletedCode(!showCompletedCode)}
+        >
+          {showCompletedCode ? "Hide" : "Show"} completed code
+        </button>
+      )}
+      {showCompletedCode && (
+        <div className="flex flex-wrap max-w-fit">
+          <div>
+            {data &&
+              data.length > 0 &&
+              data.map((item: GetAiCompletedCodeResponseObject, index: any) => {
+                return (
+                  <CompletedCode
+                    key={index}
+                    data={item}
+                    defaultOpen={index === 0}
+                  />
+                );
+              })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

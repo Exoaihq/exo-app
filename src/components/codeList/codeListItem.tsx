@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { useFileUploadContext } from "../../context/fileUpdateContext";
-import { formatTimeStampToHumanReadableTime } from "../../hooks/parseTimeStamp";
+import {
+  formatTimeStampToHumanReadableShortDateTime,
+  formatTimeStampToHumanReadableTime,
+} from "../../hooks/parseTimeStamp";
 import Divider from "../divider";
 import { ChevronDownIcon, ChevronUpIcon } from "../icons";
-import LoadingIndicator from "../scratchPad/completedCode.tsx/loadingIndicator";
+import LoadingIndicator from "../scratchPad/completedCode/loadingIndicator";
 import SimpleToastNoButtons from "../toast/toastNoButtons";
 
 export interface CodeListItemProps {
@@ -46,7 +49,7 @@ const CodeListItem = (props: CodeListItemProps) => {
         <div className="flex-auto px-4 py-2 ">
           <p className="grow">{truncateText(title)}</p>
           <div className="flex gap-3 items-center leading-normal text-sm opacity-60">
-            <small>{formatTimeStampToHumanReadableTime(date)}</small>
+            <small>{formatTimeStampToHumanReadableShortDateTime(date)}</small>
             {fileName && filePath && (
               <button
                 onClick={() =>

@@ -16,3 +16,4 @@ export * from "./Search";
 export * from "./Menu";
 export * from "./Edit";
 export * from "./GarbageCan";
+export * from "./Emojis";
