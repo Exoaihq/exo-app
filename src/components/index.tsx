@@ -25,9 +25,9 @@ declare global {
       createOrUpdateFile: (response: OpenAiResponseAndMetadata) => Promise<any>;
       getBaseApiUrl: () => Promise<string>;
       getFile: (path: string) => string;
-      getAndParseDirectories: (
-        directory: GetDirectoriesResponseObject
-      ) => Promise<FilePathAndContent[]>;
+      getAndParseDirectories: (directory: {
+        file_path: string;
+      }) => Promise<FilePathAndContent[]>;
       selectFolder: () => Promise<string>;
       reload: () => Promise<void>;
       updateChangedFile: (path: string) => Promise<{
