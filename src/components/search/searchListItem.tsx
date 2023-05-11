@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useFileUploadContext } from "../../context/fileUpdateContext";
-import { formatTimeStampToHumanReadableTime } from "../../hooks/parseTimeStamp";
+import { formatTimeStampToHumanReadableShortDateTime } from "../../hooks/parseTimeStamp";
 import { decimalToPercentage } from "../../utils/parsingReturnedCode";
 import { ChevronDownIcon, ChevronUpIcon } from "../icons";
 
@@ -9,20 +9,20 @@ export interface SearchListItemProps {
   created_at: string;
   file_name: string;
   code_string: string;
-  parsed_code_type: string | null;
-  relative_file_path: string;
+  content: string;
+  file_path: string;
   similarity: number;
-  code_explaination: string;
+  file_explaination: string;
   account_id: string;
 }
 
 export interface CardProps {
   created_at: string;
   file_name: string;
-  parsed_code_type: string | null;
-  relative_file_path: string;
+  content: string | null;
+  file_path: string;
   similarity: string;
-  code_explaination: string;
+  file_explaination: string;
   showCode: boolean;
   handleGetFile: (filePath: string) => void;
   selectedFile: {
@@ -34,15 +34,14 @@ function Card({
   file_name,
   created_at,
   showCode,
-  relative_file_path,
+  file_path,
   handleGetFile,
   similarity,
-  parsed_code_type,
+  content,
   selectedFile,
 }: CardProps) {
-  const fullPath =
-    relative_file_path && file_name ? relative_file_path + "/" + file_name : "";
-
+  const fullPath = file_path && file_name ? file_path + "/" + file_name : "";
+  console.log("created_at", created_at);
   return (
     <div
       className={`flex space-x-4 items-center rounded-lg ${
@@ -50,7 +49,7 @@ function Card({
       } shadow-lg p-4 mb-4`}
       data-eid="_task_3_title_id"
     >
-      {file_name && relative_file_path && (
+      {file_name && file_path && (
         <button
           onClick={() => handleGetFile(fullPath)}
           className="p-2 rounded-lg bg-primary-700 text-gray-200 inline-flex items-center gap-2 justify-center hover:text-gray-600 hover:bg-blue-300 "
@@ -62,10 +61,10 @@ function Card({
         <div className="flex flex-row space-x-1">
           <h5 className="grow ">{file_name}</h5>
         </div>
-        <p>{relative_file_path}</p>
+        <p>{file_path}</p>
         <div className="flex flex-row">
           <p className="basis-1/4">{similarity}</p>
-          <p className="grow">Type: {parsed_code_type}</p>
+          <p className="basis-1/4">Created: {created_at}</p>
         </div>
       </div>
       <div className="flex">
@@ -89,10 +88,10 @@ const SearchListItem = (props: SearchListItemProps) => {
   const {
     created_at,
     file_name,
-    parsed_code_type,
-    relative_file_path,
+    content,
+    file_path,
     similarity,
-    code_explaination,
+    file_explaination,
   } = props;
 
   function toggle() {
@@ -102,20 +101,20 @@ const SearchListItem = (props: SearchListItemProps) => {
   return (
     <div className="p-2" onClick={toggle}>
       <Card
-        parsed_code_type={parsed_code_type}
+        content={content}
         file_name={file_name}
-        created_at={formatTimeStampToHumanReadableTime(created_at)}
+        created_at={formatTimeStampToHumanReadableShortDateTime(created_at)}
         showCode={showCode}
-        relative_file_path={relative_file_path}
+        file_path={file_path}
         handleGetFile={handleGetFile}
         similarity={decimalToPercentage(similarity)}
         selectedFile={selectedFile}
-        code_explaination={code_explaination}
+        file_explaination={file_explaination}
       />
 
       <div hidden={!showCode}>
         <pre className="flex bg-slate-100 rounded-lg p-4 mb-4 max-w-fit">
-          {code_explaination}
+          {file_explaination}
         </pre>
       </div>
     </div>
