@@ -4,19 +4,17 @@ import { createClient } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-const supabase = createClient(
-  "https://xexjtohvdexqxpomspdb.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhleGp0b2h2ZGV4cXhwb21zcGRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzgzMDg0MjYsImV4cCI6MTk5Mzg4NDQyNn0.-3oqirs2PwoAS42jmB47QE-A1GSyUBxsdLsNz_8dDgk"
-);
-
 export const SessionContextWrapper = (props: any) => {
-  const [baseApiUrl, setBaseApiUrl] = useState(
-    "https://code-gen-server.herokuapp.com"
-  );
+  const [baseApiUrl, setBaseApiUrl] = useState("http://localhost:8081");
   const [sessionId, setSessionId] = useState(uuidv4());
   const [session, setSession] = useState(null);
   const [loginErrorMessage, setLoginErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isProd, setIsProd] = useState(false);
+  const [supabaseUrl, setSupabaseUrl] = useState("");
+  const [supabaseAnon, setSupabaseAnon] = useState("");
+  const [supabase, setSupabase] = useState(null);
 
   async function handleLogin(email: string, password: string) {
     const res = await supabase.auth.signInWithPassword({
@@ -27,6 +25,24 @@ export const SessionContextWrapper = (props: any) => {
       setLoginErrorMessage(res.error.message);
     } else {
       setSession(res.data.session);
+    }
+  }
+
+  async function handleSignup(email: string, password: string) {
+    const res = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    console.log(res);
+
+    if (res.error) {
+      setLoginErrorMessage(res.error.message);
+    } else {
+      setSession(res.data.session);
+      setSuccessMessage(
+        "Account created successfully! Confirm your email and then log in."
+      );
     }
   }
 
@@ -43,12 +59,31 @@ export const SessionContextWrapper = (props: any) => {
 
   useEffect(() => {
     if (window) {
-      window.api.getBaseApiUrl().then((res) => {
-        setBaseApiUrl(res);
+      window.api.getEnvVariables().then((res) => {
+        setBaseApiUrl(res.baseApiUrl);
+        setSupabaseUrl(res.supabaseUrl);
+        setSupabaseAnon(res.supabaseAnon);
+
+        if (res.baseApiUrl.includes("localhost")) {
+          setIsProd(false);
+        } else {
+          setIsProd(true);
+        }
       });
-      getSession();
     }
   }, [window]);
+
+  useEffect(() => {
+    if (supabaseAnon && supabaseUrl) {
+      setSupabase(createClient(supabaseUrl, supabaseAnon));
+    }
+  }, [supabaseAnon, supabaseUrl]);
+
+  useEffect(() => {
+    if (supabase) {
+      getSession();
+    }
+  }, [supabase]);
 
   const value = {
     session,
@@ -60,6 +95,9 @@ export const SessionContextWrapper = (props: any) => {
     loginErrorMessage,
     setLoading,
     loading,
+    handleSignup,
+    isProd,
+    successMessage,
   };
   return (
     <SessionContext.Provider value={value}>
@@ -79,6 +117,9 @@ export const SessionContext = createContext({
   loginErrorMessage: null,
   setLoading: (value: boolean) => {},
   loading: false,
+  handleSignup: (email: string, password: string) => {},
+  isProd: false,
+  successMessage: null,
 });
 
 export const useSessionContext = () => useContext(SessionContext);
