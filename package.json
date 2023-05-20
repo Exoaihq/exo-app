@@ -2,9 +2,9 @@
   "name": "exo-app",
   "productName": "exo-app",
   "version": "1.0.6",
-  "description": "My Electron application description",
+  "description": "Exo electron app",
   "main": ".webpack/main",
-  "homepage": "https://github.com/kmgrassi/code-gen-app",
+  "homepage": "https://github.com/Exoaihq/exo-app",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
