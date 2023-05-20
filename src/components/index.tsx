@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "react-query";
 import { FilePathAndContent } from "../utils/fileSystem";
 import {
+  CreateDirectoryRequest,
   GetDirectoriesResponseObject,
   OpenAiResponseAndMetadata,
 } from "../api";
@@ -18,12 +19,20 @@ import MainPage from "./MainPage";
 import { FileUploadContextWrapper } from "../context/fileUpdateContext";
 import { SearchContextWrapper } from "../context/searchContext";
 import { PromptContextWrapper } from "../context/promptContext";
+import { CreatePullRequestOptions } from "../utils/gitCommands";
+import { OpenWindowOptions } from "../utils/openWindow";
+
+export type getEnvVariables = {
+  baseApiUrl: string;
+  supabaseUrl: string;
+  supabaseAnon: string;
+};
 
 declare global {
   interface Window {
     api: {
       createOrUpdateFile: (response: OpenAiResponseAndMetadata) => Promise<any>;
-      getBaseApiUrl: () => Promise<string>;
+      getEnvVariables: () => Promise<getEnvVariables>;
       getFile: (path: string) => string;
       getAndParseDirectories: (directory: {
         file_path: string;
@@ -34,6 +43,8 @@ declare global {
         files: string;
         untrackedFiles: string[];
       }>;
+      createPr: (options: CreatePullRequestOptions) => Promise<any>;
+      openWindow: (options: OpenWindowOptions) => Promise<any>;
     };
   }
 }

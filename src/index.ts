@@ -8,7 +8,10 @@ import {
   iterateDir,
   overwriteFile,
 } from "./utils/fileSystem";
-import { getGitDiff } from "./utils/gitCommands";
+import { createPullRequest, getGitDiff } from "./utils/gitCommands";
+import { openWindow } from "./utils/openWindow";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require("dotenv").config();
 
 todesktop.init();
 const path = require("path");
@@ -73,6 +76,10 @@ const createWindow = async (): Promise<void> => {
     return await getGitDiff(response);
   });
 
+  ipcMain.handle("create-pr", async (event, response) => {
+    return await createPullRequest(response);
+  });
+
   ipcMain.handle("dialog:openDirectory", async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
       properties: ["openDirectory"],
@@ -96,7 +103,15 @@ const createWindow = async (): Promise<void> => {
   });
 
   ipcMain.handle("process", (event, response) => {
-    return baseApiUrl;
+    return {
+      baseApiUrl,
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseAnon: process.env.SUPABASE_ANON,
+    };
+  });
+
+  ipcMain.handle("open-window", (event, response) => {
+    return openWindow(response);
   });
 
   !app.isPackaged && mainWindow.webContents.openDevTools();

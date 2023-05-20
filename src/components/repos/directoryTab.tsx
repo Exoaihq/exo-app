@@ -9,6 +9,25 @@ import SavedRepoItem from "./saveRepoItem";
 function DirectoryTab() {
   const { directories } = useDirectoryContext();
 
+  // async function handleCreatePr() {
+  //   await window.api.createPr({
+  //     baseDirectory: "/Users/kg/Repos/code-gen-app",
+  //     fromBranch: "kevin/test-branch-4",
+  //     toBranch: "main",
+  //     title: "Test PR",
+  //     description: "Test PR description",
+  //   });
+  // }
+
+  // async function handleOpenWindow() {
+  //   await window.api.openWindow({
+  //     url: `https://github.com/login/oauth/authorize?client_id=12345&state=abcdefg`,
+  //     width: 800,
+  //     height: 600,
+  //     title: "My Window",
+  //   });
+  // }
+
   return (
     <WriteTestContextWrapper>
       <AddRepoOrFile />
