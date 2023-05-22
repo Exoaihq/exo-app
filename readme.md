@@ -59,6 +59,8 @@ Being a freestanding application, Exo embraces UI tools that are more aligned wi
 
 ## Quickstart
 
+https://www.loom.com/share/d2ec3f01140746e6ae1d47507f24e5ec
+
 ### Clone repos
 
 ```
